@@ -1,7 +1,11 @@
 import { useState } from "react";
-import { auth } from "../configs/firebase";
+import { auth, googleProvider } from "../configs/firebase";
 import { useNavigate } from "react-router";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -22,6 +26,23 @@ export default function LoginPage() {
       console.log(error);
     }
   }
+
+  async function handleGoogleLogin() {
+    try {
+      const oauthlogin = await signInWithPopup(auth, googleProvider);
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(oauthlogin);
+      const token = credential.accessToken;
+      const user = oauthlogin.user;
+      console.log(credential, "<<<< credential");
+      console.log(token, "<<<< token");
+      console.log(user, "<<<<user");
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <>
       <div className="min-h-screen flex">
@@ -31,8 +52,8 @@ export default function LoginPage() {
         </div>
 
         {/* Right */}
-        <div className="flex w-full md:w-1/2 bg-amber-500 items-center justify-center px-6 py-12">
-          <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+        <div className="flex w-full md:w-1/2 items-center justify-center px-6 py-12">
+          <div className="w-full max-w-md bg-white p-8 rounded-lg">
             <h1 className="text-2xl font-bold mb-6 text-center">Login Page</h1>
 
             <form onSubmit={handleLogin} className="space-y-4">
@@ -66,6 +87,21 @@ export default function LoginPage() {
               >
                 Login
               </button>
+              <div className="w-full flex gap-4">
+                <button
+                  onClick={handleGoogleLogin}
+                  className="flex-1 flex items-center justify-center gap-3 bg-slate-100 py-2 px-2 rounded-lg cursor-pointer"
+                >
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png"
+                    className="w-6 h-6"
+                    alt="Google"
+                  />
+                  <span className="text-base text-slate-700">
+                    Continue with Google
+                  </span>
+                </button>
+              </div>
             </form>
           </div>
         </div>
