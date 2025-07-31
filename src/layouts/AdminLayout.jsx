@@ -1,20 +1,27 @@
-import { useContext, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import { Outlet, useNavigate } from "react-router";
-import { AuthContext } from "../contexts/AuthContext";
+import { auth } from "../configs/firebase";
 
 export default function AdminLayout() {
-  const { user } = useContext(AuthContext);
+  const [isLoadPage, setLoadPage] = useState(true);
   const navigate = useNavigate();
   useEffect(() => {
-    console.log("pengecekan user di AdminLayout");
-    if (user) {
-      navigate("/");
-    }
+    onAuthStateChanged(auth, (user) => {
+      console.log(user);
+      if (user) {
+        navigate("/");
+      }
+      setLoadPage(false);
+    });
   }, []);
 
+  if (isLoadPage) {
+    return <div>Loading...</div>;
+  }
   return (
     <>
-      {/* <header> -- Admin side -- </header> */}
+      <header>Admin Side</header>
       <Outlet />
     </>
   );
