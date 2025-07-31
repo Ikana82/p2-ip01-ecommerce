@@ -11,7 +11,7 @@ export default function MainLayout() {
     if (!user) {
       navigate("/auth/login");
     }
-  }, []);
+  }, [user, navigate]);
 
   return (
     <>

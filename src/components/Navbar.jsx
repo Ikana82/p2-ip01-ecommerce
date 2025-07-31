@@ -7,10 +7,6 @@ function Navbar() {
   return (
     <div className="navbar bg-white px-8 text-gray-700 shadow-sm z-10">
       <div className="navbar-start flex items-center gap-4">
-        <div className="p-0 cursor-default">
-          <img src={logo} alt="Logo" className="h-12 w-auto pt-1" />
-        </div>
-
         {/* Hamburger Menu untuk Mobile */}
         <div className="dropdown lg:hidden">
           <button className="btn btn-ghost btn-lg hover:bg-gray-200 text-gray-600">
@@ -27,6 +23,9 @@ function Navbar() {
               <a className="hover:bg-black">Woman</a>
             </li>
           </ul>
+        </div>
+        <div className="pr-2 cursor-default">
+          <img src={logo} alt="Logo" className="h-12 w-auto pt-1" />
         </div>
 
         {/* Menu untuk layar besar */}

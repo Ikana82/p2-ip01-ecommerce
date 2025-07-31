@@ -10,7 +10,7 @@ export default function AdminLayout() {
     if (user) {
       navigate("/");
     }
-  }, [user]);
+  }, [user, navigate]);
 
   return (
     <>

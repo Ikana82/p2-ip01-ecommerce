@@ -1,45 +1,45 @@
 import { useState } from "react";
 import { auth, googleProvider } from "../configs/firebase";
 import { useNavigate } from "react-router";
-import {
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
-} from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   async function handleLogin(e) {
     e.preventDefault();
+    setError("");
+    setLoading(true);
     try {
-      const userLoggedIn = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      console.log(userLoggedIn);
+      await signInWithEmailAndPassword(auth, email, password);
       navigate("/");
     } catch (error) {
-      console.log(error);
+      console.error("Firebase Error:", error);
+      setError("Failed to login. Please check your email and password.");
+    } finally {
+      setLoading(false);
     }
   }
 
   async function handleGoogleLogin() {
+    setError("");
+    setLoading(true);
     try {
-      const oauthlogin = await signInWithPopup(auth, googleProvider);
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      const credential = GoogleAuthProvider.credentialFromResult(oauthlogin);
-      const token = credential.accessToken;
-      const user = oauthlogin.user;
-      console.log(credential, "<<<< credential");
-      console.log(token, "<<<< token");
-      console.log(user, "<<<<user");
+      await signInWithPopup(auth, googleProvider);
       navigate("/");
     } catch (error) {
-      console.log(error);
+      console.error("Google Login Error:", error);
+      const errorMessage =
+        error.code === "auth/popup-closed-by-user"
+          ? "Login process was cancelled."
+          : "Failed to login with Google. Please try again.";
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
   }
 
