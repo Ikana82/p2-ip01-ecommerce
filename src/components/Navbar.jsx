@@ -13,18 +13,18 @@ function Navbar() {
 
         {/* Hamburger Menu untuk Mobile */}
         <div className="dropdown lg:hidden">
-          <button className="btn btn-ghost btn-sm hover:bg-gray-300 text-gray-600">
+          <button className="btn btn-ghost btn-lg hover:bg-gray-200 text-gray-600">
             ☰
           </button>
           <ul className="menu menu-sm dropdown-content mt-2 p-2 shadow bg-white rounded-box w-40 text-sm">
             <li>
-              <a className="hover:bg-gray-300">Shop</a>
+              <a className="hover:bg-black">Shop</a>
             </li>
             <li>
-              <a className="hover:bg-gray-300">Men</a>
+              <a className="hover:bg-black">Men</a>
             </li>
             <li>
-              <a className="hover:bg-gray-300">Woman</a>
+              <a className="hover:bg-black">Woman</a>
             </li>
           </ul>
         </div>
