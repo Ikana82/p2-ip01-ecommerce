@@ -41,7 +41,7 @@ export default function Banner() {
 
   return (
     <div className="relative w-full h-[500px] overflow-hidden">
-      {/* Latar belakang image atau video */}
+      {/* slide image dan video */}
       <div className="w-full h-full">
         {activeBanner.videoUrl ? (
           <video
@@ -97,13 +97,13 @@ export default function Banner() {
       <div className="absolute inset-0 flex items-center justify-between px-4 z-10">
         <button
           onClick={handlePrev}
-          className="p-2 rounded-full bg-black/30 hover:bg-black/50 text-white text-2xl"
+          className="p-2 rounded-full bg-black/20 hover:bg-black/50 text-white text-2xl"
         >
           <GrFormPrevious />
         </button>
         <button
           onClick={handleNext}
-          className="p-2 rounded-full bg-black/30 hover:bg-black/50 text-white text-2xl"
+          className="p-2 rounded-full bg-black/20 hover:bg-black/50 text-white text-2xl"
         >
           <GrFormNext />
         </button>

@@ -2,20 +2,23 @@ import { useEffect, useContext } from "react";
 import { Outlet, useNavigate } from "react-router";
 import Navbar from "../components/Navbar";
 import { AuthContext } from "../contexts/AuthContext";
+import Footer from "../components/Footer";
 
 export default function MainLayout() {
-  const { user } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
   useEffect(() => {
     console.log("pengecekan user di MainLayout");
-    if (!user) {
+    if (!loading && !user) {
       navigate("/auth/login");
     }
-  }, [user, navigate]);
+  }, [user, loading, navigate]);
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col w-full min-h-screen bg-white">
         {/* Tempat Navbar, dibuat tetap biar nggak ikut ke scroll */}
         <div className="sticky top-0 z-50 w-full bg-white shadow">
           <Navbar />
@@ -26,7 +29,7 @@ export default function MainLayout() {
         </div>
 
         <footer className="w-full h-[5%] text-center py-4 bg-gray-100">
-          Footer
+          <Footer />
         </footer>
       </div>
     </>
