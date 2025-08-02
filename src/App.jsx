@@ -23,6 +23,8 @@ import ContactPage from "./pages/ContactPage";
 import { useContext, useEffect } from "react";
 import HomePublicPage from "./pages/public/HomePublicPage";
 import AboutPublicPage from "./pages/public/AboutPublicPage";
+import MenPublicPage from "./pages/public/MenPublicPage";
+import WomanPublicPage from "./pages/public/WomanPublicPage";
 
 function AdminProtactedPage({ children }) {
   const { role } = useContext(AuthContext);
@@ -98,6 +100,18 @@ const router = createBrowserRouter([
       {
         path: "about",
         element: <AboutPublicPage />,
+      },
+      {
+        path: "shop",
+        element: <HomePublicPage />,
+      },
+      {
+        path: "men",
+        element: <MenPublicPage />,
+      },
+      {
+        path: "woman",
+        element: <WomanPublicPage />,
       },
     ],
   },

@@ -26,8 +26,8 @@ export default function NewArrival() {
 
   return (
     <>
-      <section className="w-full px-4 md:px-6 pt-15">
-        <div className="flex items-center gap-2 mb-8">
+      <section className="w-full px-10 md:px-6 pt-15">
+        <div className="flex items-center gap-2 mb-8 px-4">
           <div className="w-2 h-7 bg-black rounded-[10px]" />
           <h2 className="text-xl md:text-2xl font-medium text-neutral-800">
             New Arrival

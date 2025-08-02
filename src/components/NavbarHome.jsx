@@ -1,50 +1,84 @@
 import React, { useState } from "react";
 import logo from "../assets/Kanara-logo.png";
+import { useNavigate, useLocation } from "react-router";
 
 function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <>
-      <div className="navbar bg-white px-8 text-gray-700 shadow-sm z-10">
+      <div className="navbar bg-white px-4 md:px-8 lg:px-12 text-gray-700 shadow-sm z-10">
         <div className="navbar-start flex items-center gap-2">
           {/* Hamburger Menu untuk Mobile */}
           <div className="dropdown lg:hidden">
             <button className="btn btn-ghost btn-lg hover:bg-gray-200 text-gray-600">
               ☰
             </button>
-            <ul className="menu menu-sm dropdown-content mt-2 p-2 shadow bg-white rounded-box w-40 text-sm">
+            <ul className="menu menu-sm dropdown-content mt-2 p-2 shadow bg-white rounded-box w-40 text-sm z-[5]">
               <li>
-                <a className="hover:bg-black">Shop</a>
+                <button
+                  onClick={() => navigate("/public")}
+                  className="hover:bg-black"
+                >
+                  Shop
+                </button>
               </li>
               <li>
-                <a className="hover:bg-black">Men</a>
+                <button
+                  onClick={() => navigate("/public/men")}
+                  className="hover:bg-black"
+                >
+                  Men
+                </button>
               </li>
               <li>
-                <a className="hover:bg-black">Woman</a>
+                <button
+                  onClick={() => navigate("/public/woman")}
+                  className="hover:bg-black"
+                >
+                  Woman
+                </button>
               </li>
             </ul>
           </div>
-          <div className="pr-2 cursor-default">
+
+          <div className="pr-2 cursor-pointer">
             <img src={logo} alt="Logo" className="h-12 w-auto pt-1" />
           </div>
 
           {/* Menu untuk Desktop */}
-          <ul className="menu menu-horizontal gap-3 hidden lg:flex text-lg">
+          <ul className="menu menu-horizontal gap-3 hidden lg:flex text-base lg:text-lg">
             <li>
-              <a className="hover:font-bold">Shop</a>
+              <button
+                onClick={() => navigate("/public")}
+                className="hover:font-bold"
+              >
+                Shop
+              </button>
             </li>
             <li>
-              <a className="hover:font-bold">Men</a>
+              <button
+                onClick={() => navigate("/public/men")}
+                className="hover:font-bold"
+              >
+                Men
+              </button>
             </li>
             <li>
-              <a className="hover:font-bold">Woman</a>
+              <button
+                onClick={() => navigate("/public/woman")}
+                className="hover:font-bold"
+              >
+                Woman
+              </button>
             </li>
           </ul>
         </div>
 
         {/* Right */}
-        <div className="navbar-end flex items-center gap-3 ml-auto px-4">
+        <div className="navbar-end flex items-center gap-3 sm:gap-4 md:gap-5 ml-auto px-2 sm:px-4">
           {/* Search */}
           <div className="dropdown dropdown-end">
             <button
@@ -67,7 +101,7 @@ function Navbar() {
               </svg>
             </button>
             {showSearch && (
-              <div className="dropdown-content z-[1] mt-2 w-64 p-2 bg-white rounded-box shadow">
+              <div className="dropdown-content z-[10] mt-2 w-64 p-2 bg-white rounded-box shadow">
                 <input
                   type="text"
                   placeholder="Search products..."
@@ -110,13 +144,12 @@ function Navbar() {
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  {" "}
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth="2"
                     d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                  />{" "}
+                  />
                 </svg>
                 <span className="badge badge-sm indicator-item bg-red-600 text-white">
                   8
@@ -125,7 +158,7 @@ function Navbar() {
             </div>
             <div
               tabIndex={0}
-              className="card card-compact dropdown-content bg-base-100 z-1 mt-3 w-52 shadow"
+              className="card card-compact dropdown-content bg-base-100 z-[5] mt-3 w-52 shadow"
             >
               <div className="card-body">
                 <span className="text-lg font-bold">8 Items</span>
@@ -148,19 +181,18 @@ function Navbar() {
             >
               <div className="w-10 rounded-full">
                 <img
-                  alt="Tailwind CSS Navbar component"
+                  alt="User avatar"
                   src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                 />
               </div>
             </div>
             <ul
               tabIndex={0}
-              className="menu menu-md dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+              className="menu menu-md dropdown-content bg-base-100 rounded-box z-[5] mt-3 w-52 p-2 shadow"
             >
               <li>
                 <a className="justify-between">
-                  Profile
-                  <span className="badge">New</span>
+                  Profile <span className="badge">New</span>
                 </a>
               </li>
               <li>

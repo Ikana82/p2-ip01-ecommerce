@@ -34,13 +34,13 @@ export default function PublicLayout() {
   return (
     <>
       <NavbarHome />
-      <BannerSlide />
+      {/* <BannerSlide />
       <CardPromo />
       <NewArrival />
       <CallToAction />
       <CategoryMen />
       <CategoryWoman />
-      <TheLimelight />
+      <TheLimelight /> */}
       <header>-- Public Side --</header>
       <Outlet />
       <Footer />

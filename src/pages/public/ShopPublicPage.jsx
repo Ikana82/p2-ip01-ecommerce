@@ -11,7 +11,7 @@ import CategoryMen from "../../components/CategoryMen";
 import CategoryWoman from "../../components/CategoryWoman";
 import TheLimelight from "../../components/TheLimelight";
 
-export default function HomePublicPage() {
+export default function ShopPublicPage() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -33,7 +33,7 @@ export default function HomePublicPage() {
       <CategoryMen />
       <CategoryWoman />
       <TheLimelight />
-      <div>Halaman home public tes</div>
+      <div>Halaman Shop</div>
       {user && <button onClick={handleLogout}>Sign Out</button>}
     </>
   );
