@@ -1,233 +1,259 @@
 import { useState } from "react";
+import { auth, googleProvider } from "../configs/firebase";
 import { useNavigate } from "react-router";
-import { auth, db, googleProvider } from "../configs/firebase";
 import {
   createUserWithEmailAndPassword,
-  updateProfile,
+  signOut,
   signInWithPopup,
+  GoogleAuthProvider,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { IoEye, IoEyeOff } from "react-icons/io5";
+import toast, { Toaster } from "react-hot-toast";
+import { db } from "../configs/firebase";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 export default function RegisterPage() {
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [confirmpassword, setConfirmPassword] = useState("");
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoadingCreate, setIsLoadingCreate] = useState(false);
 
-  const handleRegister = async (e) => {
+  async function handleRegister(e) {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      toast.error("Password tidak cocok");
+
+    if (!/^\d{10,13}$/.test(phone)) {
+      toast.error("Phone number must be 10-13 digits");
       return;
     }
 
-    setIsLoading(true);
+    if (
+      !username.trim() ||
+      !email.trim() ||
+      !password.trim() ||
+      !confirmpassword.trim() ||
+      !phone.trim()
+    ) {
+      toast.error("All fields are required");
+      return;
+    }
+
+    if (password !== confirmpassword) {
+      toast.error("Oops! Those passwords don’t match. Try again");
+      return;
+    }
+
+    setIsLoadingCreate(true);
+
     try {
-      const userCredential = await createUserWithEmailAndPassword(
+      const userLoggedIn = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
-      const user = userCredential.user;
-
-      await updateProfile(user, { displayName: username });
-
+      const user = userLoggedIn.user;
       await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        email: user.email,
-        username: username,
-        createdAt: new Date(),
+        username,
+        email,
+        phone,
+        role: "customer",
+        createdAt: serverTimestamp(),
       });
-
-      toast.success("Registrasi berhasil!");
-      navigate("/");
+      await signOut(auth);
+      // console.log(userLoggedIn);
+      toast.success("Account created successfully!");
+      navigate("/auth/login");
     } catch (error) {
-      console.error("Firebase Error:", error);
-      toast.error("Gagal registrasi: " + error.message);
+      console.log(error);
+      if (error.code === "auth/email-already-in-use") {
+        toast.error("Email is already registered");
+      } else {
+        toast.error("Failed to register: " + error.message);
+      }
     } finally {
-      setIsLoading(false);
+      setIsLoadingCreate(false);
     }
-  };
+  }
 
-  const handleGoogleRegister = async () => {
+  async function handleGoogleLogin() {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        email: user.email,
-        username: user.displayName || "Anonymous",
-        createdAt: new Date(),
-      });
-
-      toast.success("Registrasi dengan Google berhasil!");
+      const oauthlogin = await signInWithPopup(auth, googleProvider);
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(oauthlogin);
+      const token = credential.accessToken;
+      const user = oauthlogin.user;
+      console.log(credential, "<<<< credential");
+      console.log(token, "<<<< token");
+      console.log(user, "<<<<user");
       navigate("/");
     } catch (error) {
-      console.error("Google Login Error:", error);
-      toast.error("Google Sign Up gagal: " + error.message);
+      console.log(error);
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-black text-white">
-      <ToastContainer position="top-right" autoClose={3000} />
+    <div className="w-full bg-white flex flex-col md:flex-row overflow-hidden px-6 py-6">
+      <Toaster position="top-right" reverseOrder={false} />
+      {/* Left Side (Image atau Banner) */}
+      <div className="w-full md:w-1/2 flex justify-center items-center">
+        <img
+          src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Fashion"
+          className="w-full h-full object-cover rounded-[20px]"
+        />
+      </div>
 
-      {/* Left Section (Image) */}
-      <div
-        className="hidden md:flex flex-1 items-center justify-center bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url(https://i.pinimg.com/1200x/f2/af/d3/f2afd331134dfa6d5ae543d6394d0f32.jpg)",
-        }}
-      ></div>
+      {/* Right Side (Form login and register) */}
+      <div className="w-full md:w-1/2 md:px-16 py-6 flex flex-col justify-center items-center gap-6">
+        {/* Header */}
+        <div className="w-full flex flex-col gap-4 text-center">
+          <div className="text-2xl md:text-4xl font-semibold text-gray-900 ">
+            Sign Up
+          </div>
+          <p className="text-base md:text-lg text-slate-700 leading-normal tracking-tight">
+            Today is a new day. It's your day. You shape it. <br />
+            Sign up and start expressing your style.
+          </p>
+        </div>
 
-      {/* Right Section (Form) */}
-      <div className="flex flex-1 md:w-1/2 items-center justify-center px-6 py-2 bg-black">
-        <div className="w-full max-w-md flex flex-col items-center gap-6 py-6">
-          {/* Heading */}
-          <div className="w-full text-center flex flex-col gap-4">
-            <div className="text-2xl font-semibold text-white">Sign Up</div>
-            <p className="text-sm text-gray-300">
-              Today is a new day. It's your day. You shape it.
-              <br />
-              Sign up and start expressing your style.
-            </p>
+        <form
+          onSubmit={handleRegister}
+          action=""
+          className="w-full flex flex-col gap-4 text-center"
+        >
+          <div className="flex flex-col gap-2">
+            <label className="text-sm text-gray-900">Username</label>
+            <input
+              type="text"
+              value={username}
+              placeholder="Username"
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full h-10 px-3 bg-slate-100 rounded-lg outline-gray-300 text-sm placeholder-gray-400 placeholder:text-sm placeholder:italic"
+            />
           </div>
 
-          {/* Form */}
-          <form
-            onSubmit={handleRegister}
-            className="w-full flex flex-col gap-4 text-center"
-          >
-            {/* Username */}
-            <div className="flex flex-col gap-2 text-left">
-              <label className="text-sm text-white">Username</label>
-              <input
-                type="text"
-                value={username}
-                placeholder="Your username"
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                className="w-full h-10 px-3 bg-gray-800 text-white rounded-lg outline-none placeholder-gray-400"
-              />
-            </div>
-
-            {/* Email */}
-            <div className="flex flex-col gap-2 text-left">
-              <label className="text-sm text-white">Email</label>
-              <input
-                type="email"
-                value={email}
-                placeholder="Example@mail.com"
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full h-10 px-3 bg-gray-800 text-white rounded-lg outline-none placeholder-gray-400"
-              />
-            </div>
-
-            {/* Password */}
-            <div className="flex flex-col gap-2 text-left">
-              <label className="text-sm text-white">Password</label>
-              <div className="flex items-center w-full h-10 bg-gray-800 rounded-lg">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  placeholder="Enter password"
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="flex-1 w-full h-10 px-3 bg-gray-800 text-white outline-none rounded-lg placeholder-gray-400 pr-10"
-                />
-                <div
-                  className="cursor-pointer pr-3"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <IoMdEye size={20} />
-                  ) : (
-                    <IoMdEyeOff size={20} />
-                  )}
-                </div>
-              </div>
-              <p className="text-xs text-gray-500 mt-0.5 ml-0.5">
-                Use 8 or more characters with a mix of letters, numbers &
-                symbols
-              </p>
-            </div>
-
-            {/* Confirm Password */}
-            <div className="flex flex-col gap-2 text-left">
-              <label className="text-sm text-white">Confirm Password</label>
-              <div className="flex items-center w-full h-10 bg-gray-800 rounded-lg">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={confirmPassword}
-                  placeholder="Retype password"
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  className="flex-1 w-full h-10 px-3 bg-gray-800 text-white outline-none rounded-lg placeholder-gray-400 pr-10"
-                />
-                <div
-                  className="cursor-pointer pr-3"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <IoMdEye size={20} />
-                  ) : (
-                    <IoMdEyeOff size={20} />
-                  )}
-                </div>
-              </div>
-              <p className="text-xs text-gray-500 mt-0.5 ml-0.5">
-                Use 8 or more characters with a mix of letters, numbers &
-                symbols
-              </p>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-white text-black text-base py-2 rounded-xl cursor-pointer font-semibold hover:opacity-90 transition"
-            >
-              {isLoading ? "Registering..." : "Sign Up"}
-            </button>
-          </form>
-
-          <div className="w-full flex items-center gap-4 text-gray-300">
-            <hr className="flex-1 border-gray-600" />
-            <span className="text-sm">Or sign up with</span>
-            <hr className="flex-1 border-gray-600" />
+          <div className="flex flex-col gap-2">
+            <label className="text-sm text-gray-900">Email</label>
+            <input
+              type="email"
+              value={email}
+              placeholder="Example@mail.com"
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full h-10 px-3 bg-slate-100 rounded-lg outline-gray-300 text-sm placeholder-gray-400 placeholder:text-sm placeholder:italic"
+            />
           </div>
 
-          {/* Google Button */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm text-gray-900">Password</label>
+            <div className="flex items-center w-full h-10 bg-slate-100 rounded-lg">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                placeholder="Type password here"
+                onChange={(e) => setPassword(e.target.value)}
+                className="flex-1 w-full h-10 px-3 bg-slate-100 outline-none rounded-lg outline-gray-300 text-sm placeholder-gray-400 placeholder:text-sm placeholder:italic pr-10"
+              />
+              <div
+                className={`cursor-pointer transition-opacity duration-300 pr-3 ${
+                  password.length > 0
+                    ? "opacity-100 text-gray-700"
+                    : "opacity-50 text-gray-400"
+                }`}
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <IoEye size={20} /> : <IoEyeOff size={20} />}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-sm text-gray-900">Confirm Password</label>
+            <div className="flex items-center w-full h-10 bg-slate-100 rounded-lg">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmpassword}
+                placeholder="Confirm your password here"
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="flex-1 w-full h-10 px-3 bg-slate-100 outline-none rounded-lg outline-gray-300 text-sm placeholder-gray-400 placeholder:text-sm placeholder:italic pr-10"
+              />
+              <div
+                className={`cursor-pointer transition-opacity duration-300 pr-3 ${
+                  confirmpassword.length > 0
+                    ? "opacity-100 text-gray-700"
+                    : "opacity-50 text-gray-400"
+                }`}
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? (
+                  <IoEye size={20} />
+                ) : (
+                  <IoEyeOff size={20} />
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-sm text-gray-900">Phone Number</label>
+            <input
+              type="text"
+              value={phone}
+              placeholder="081xxxxxxxx"
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full h-10 px-3 bg-slate-100 rounded-lg outline-gray-300 text-sm placeholder-gray-400 placeholder:text-sm placeholder:italic"
+            />
+          </div>
+
           <button
-            onClick={handleGoogleRegister}
-            className="w-full flex items-center justify-center gap-3 bg-white text-black py-2 px-2 rounded-lg"
+            type="submit"
+            disabled={isLoadingCreate}
+            className="w-full bg-[#ff0000] text-white text-base py-3 rounded-xl cursor-pointer"
+          >
+            {isLoadingCreate ? (
+              <div className="flex items-center justify-center gap-2">
+                <span className="loading loading-spinner text-white"></span>
+                Creating Account...
+              </div>
+            ) : (
+              "Sign Up"
+            )}
+          </button>
+        </form>
+
+        <div className="w-full flex items-center gap-4">
+          <hr className="flex-1 border-slate-300" />
+          <span className="text-sm text-slate-700">Or sign up with</span>
+          <hr className="flex-1 border-slate-300" />
+        </div>
+
+        <div className="w-full flex gap-4">
+          <button
+            onClick={handleGoogleLogin}
+            className="flex-1 flex items-center justify-center gap-3 bg-slate-100 py-2 px-2 rounded-lg cursor-pointer"
           >
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png"
+              className="w-6 h-6"
               alt="Google"
-              className="w-5 h-5"
             />
-            <span className="text-base">Continue with Google</span>
-          </button>
-
-          <div className="text-center text-sm text-gray-300">
-            Sudah punya akun?{" "}
-            <span
-              className="text-blue-400 cursor-pointer hover:underline"
-              onClick={() => navigate("/auth/login")}
-            >
-              Sign In
+            <span className="text-base text-slate-700">
+              Continue with Google
             </span>
-          </div>
+          </button>
+        </div>
+
+        <div className="text-center text-sm md:text-base text-slate-700">
+          Already have an account?{" "}
+          <span
+            className="text-blue-700 cursor-pointer"
+            onClick={() => navigate("/auth/login")}
+          >
+            Sign in
+          </span>
         </div>
       </div>
     </div>

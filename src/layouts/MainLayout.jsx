@@ -1,37 +1,35 @@
-import { useEffect, useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import Navbar from "../components/Navbar";
 import { AuthContext } from "../contexts/AuthContext";
-import Footer from "../components/Footer";
+import Sidebar from "../components/Sidebar";
 
 export default function MainLayout() {
-  const { user, loading } = useContext(AuthContext);
+  const { user, role, username } = useContext(AuthContext);
   const navigate = useNavigate();
-  useEffect(() => {
-    console.log("pengecekan user di MainLayout");
-    if (!loading && !user) {
-      navigate("/auth/login");
-    }
-  }, [user, loading, navigate]);
 
-  if (loading) return <div>Loading...</div>;
+  useEffect(() => {
+    console.log(role, username, "pengecekan user di MainLayout");
+    if (!user) {
+      navigate("/auth/login", { replace: true });
+    }
+  }, [user, navigate]);
 
   return (
-    <>
-      <div className="flex flex-col w-full min-h-screen bg-white">
-        {/* Tempat Navbar, dibuat tetap biar nggak ikut ke scroll */}
-        <div className="sticky top-0 z-50 w-full bg-white shadow">
+    <div className="flex min-h-screen">
+      <div className="fixed top-0 left-0 h-full w-50 bg-white shadow-md border-r border-stone-300 z-50">
+        <Sidebar />
+      </div>
+
+      <div className="flex flex-col flex-1 ml-56">
+        <div className="fixed top-0 left-56 right-0 h-20 bg-white shadow-md border-b border-stone-300 z-40">
           <Navbar />
         </div>
 
-        <div className="flex-grow">
+        <div className="flex-1 mt-16 bg-stone-50 overflow-y-auto">
           <Outlet />
         </div>
-
-        <footer className="w-full h-[5%] text-center py-4 bg-gray-100">
-          <Footer />
-        </footer>
       </div>
-    </>
+    </div>
   );
 }

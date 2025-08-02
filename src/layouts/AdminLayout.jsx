@@ -1,20 +1,30 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { AuthContext } from "../contexts/AuthContext";
 
 export default function AdminLayout() {
-  const { user } = useContext(AuthContext);
+  const [isLoadPage, setLoadPage] = useState(true);
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
   useEffect(() => {
-    console.log("pengecekan user di AdminLayout");
-    if (user) {
+    if (!user) {
+      navigate("/auth/login");
+    } else if (user) {
       navigate("/");
     }
-  }, [user, navigate]);
+    setLoadPage(false);
+  }, []);
 
+  if (isLoadPage) {
+    return (
+      <div>
+        <span className="loading loading-spinner text-secondary"></span>
+      </div>
+    );
+  }
   return (
     <>
-      {/* <header> -- Admin side -- </header> */}
+      {/* <header>Admin Side</header> */}
       <Outlet />
     </>
   );

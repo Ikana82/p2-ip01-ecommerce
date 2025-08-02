@@ -1,23 +1,32 @@
-import { useEffect, useState, createContext } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../configs/firebase';
+import { useEffect, useState, createContext } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { getDoc, doc } from "firebase/firestore";
+import { auth, db } from "../configs/firebase";
 
 export const AuthContext = createContext({
   user: null,
+  role: null,
+  username: null,
   setUser: () => {},
 });
 
 export default function AuthContextProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [role, setRole] = useState(null);
+  const [username, setUsername] = useState("null");
   const [isLoadPage, setLoadPage] = useState(true);
-  const value = { user, setUser };
+  const value = { user, username, role, setUser };
 
   useEffect(() => {
     setLoadPage(true);
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log(user, '<<<<< user');
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        console.log(docSnap.data());
         setUser(user);
+        setRole(docSnap.data().role);
+        setUsername(docSnap.data().username);
       } else {
         setUser(null);
       }
@@ -30,7 +39,16 @@ export default function AuthContextProvider({ children }) {
   }, []);
 
   if (isLoadPage) {
-    return <div>Loading.....</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center gap-3">
+          <span className="loading loading-spinner text-[#000000] w-12 h-12"></span>
+          <p className="text-[#000000] text-lg font-normal">
+            Authenticating...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return <AuthContext value={value}>{children}</AuthContext>;

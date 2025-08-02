@@ -50,12 +50,11 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Divider */}
+      {/* Line */}
       <div className="border-t border-zinc-700 my-8" />
 
       {/* Bottom Footer */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-        {/* Logo & Contact */}
         <div className="flex items-center gap-4">
           <img src={kanaraWhite} alt="Kanara Logo" className="w-32 md:w-40" />
         </div>
@@ -68,14 +67,12 @@ export default function Footer() {
           <FaLinkedinIn className="cursor-pointer hover:text-white" />
         </div>
 
-        {/* App Info */}
         <div className="text-zinc-400 text-sm text-center md:text-right">
           <p>Download The App</p>
           <p>Available on the Google Play & App Store</p>
         </div>
       </div>
 
-      {/* Copyright */}
       <div className="text-center mt-10 text-zinc-500 text-xs">
         Copyright © 2025 Ika Nuraisma Folks Pvt Ltd. All rights reserved.
       </div>
