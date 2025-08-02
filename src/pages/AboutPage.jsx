@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import DetailProduct from "../components/DetailProduct";
 
 export default function AboutPage() {
   const count = useSelector((state) => state.count.value);

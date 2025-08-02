@@ -1,6 +1,7 @@
 import React from "react";
 import { MdOutlineStar } from "react-icons/md";
-import { GrFavorite } from "react-icons/gr";
+import { FaHeart } from "react-icons/fa";
+import { FaRegEye } from "react-icons/fa";
 import { TbShoppingBagPlus } from "react-icons/tb";
 
 const EtalaseMen = () => {
@@ -58,12 +59,12 @@ const EtalaseMen = () => {
     reviews = 132,
   }) => {
     return (
-      <div className="flex flex-col gap-3 border border-transparent rounded-xl p-2 transition-all duration-300 ease-in-out hover:border-gray-300 hover:shadow-md cursor-pointer">
+      <div className="flex flex-col gap-4 border border-gray-100 rounded-xl p-2 transition-all duration-300 ease-in-out hover:border-gray-300 hover:shadow-md cursor-pointer">
         {/* Gambar Produk */}
         <div className="relative rounded-xl overflow-hidden aspect-[3/4]">
           <img src={image} alt={title} className="w-full h-full object-cover" />
-          <button className="absolute top-3 right-3 bg-white w-8 h-8 flex items-center justify-center rounded-full shadow hover:bg-gray-200 transition">
-            <GrFavorite className="text-neutral-600 text-lg" />
+          <button className="absolute top-3 right-3 bg-white w-8 h-8 flex items-center justify-center rounded-full shadow transition">
+            <FaHeart className="text-gray-400 hover:text-red-600 text-lg" />
           </button>
         </div>
 
@@ -80,7 +81,7 @@ const EtalaseMen = () => {
           {/* Rating dan Review */}
           <div className="flex items-center gap-2 mt-2">
             <div className="flex items-center gap-1.5">
-              <MdOutlineStar className="text-zinc-500 w-6 h-6" />
+              <MdOutlineStar className="text-yellow-400 w-6 h-6" />
               <div className="text-sm text-zinc-500 font-medium">{rating}</div>
             </div>
             <div className="text-sm text-zinc-500 font-medium">
@@ -93,9 +94,14 @@ const EtalaseMen = () => {
             <div className="text-base font-semibold text-zinc-800 leading-tight">
               {price} USD
             </div>
-            <button className="w-10 h-10 p-2 bg-white rounded-lg shadow-inner border border-gray-200 flex items-center justify-center hover:bg-gray-200">
-              <TbShoppingBagPlus className="w-5 h-5 text-zinc-800" />
-            </button>
+            <div className="flex gap-1">
+              <button className="w-10 h-10 p-2 bg-white rounded-lg shadow-inner border border-gray-200 flex items-center justify-center hover:bg-gray-200">
+                <FaRegEye className="w-5 h-5 text-zinc-800" />
+              </button>
+              <button className="w-10 h-10 p-2 bg-white rounded-lg shadow-inner border border-gray-200 flex items-center justify-center hover:bg-gray-200">
+                <TbShoppingBagPlus className="w-5 h-5 text-zinc-800" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

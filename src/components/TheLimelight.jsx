@@ -47,11 +47,11 @@ export default function TheLimelight() {
 
         {/* Grid Layout */}
         <div className="md:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full">
             {products.map((product, idx) => (
               <div
                 key={idx}
-                className="flex flex-col items-start gap-1 bg-white"
+                className="flex flex-col items-start gap-1 border-gray-200 rounded-xl p-2 hover:border-gray-300 hover:shadow-md"
               >
                 {/* Image + Favorite */}
                 <div className="relative w-full">
