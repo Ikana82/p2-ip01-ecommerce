@@ -25,6 +25,7 @@ import HomePublicPage from "./pages/public/HomePublicPage";
 import AboutPublicPage from "./pages/public/AboutPublicPage";
 import MenPublicPage from "./pages/public/MenPublicPage";
 import WomanPublicPage from "./pages/public/WomanPublicPage";
+import CartPublicPage from "./pages/public/CartPublicPage";
 
 function AdminProtactedPage({ children }) {
   const { role } = useContext(AuthContext);
@@ -112,6 +113,10 @@ const router = createBrowserRouter([
       {
         path: "woman",
         element: <WomanPublicPage />,
+      },
+      {
+        path: "cart",
+        element: <CartPublicPage />,
       },
     ],
   },
