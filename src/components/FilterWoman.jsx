@@ -3,7 +3,6 @@ import { db } from "../firebase/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { LuSettings2 } from "react-icons/lu";
 
-// Menerima props dari WomenPublicPage
 export default function FilterWoman({ selectedFilters, setSelectedFilters }) {
   const [filterData, setFilterData] = useState({
     categories: [],
@@ -22,6 +21,7 @@ export default function FilterWoman({ selectedFilters, setSelectedFilters }) {
         const uniqueCategories = [
           ...new Set(
             allData
+              .filter((item) => item.gender === "Women")
               .flatMap((item) =>
                 typeof item.category === "string"
                   ? item.category.split(",").map((s) => s.trim())
@@ -36,6 +36,7 @@ export default function FilterWoman({ selectedFilters, setSelectedFilters }) {
         const uniqueStyles = [
           ...new Set(
             allData
+              .filter((item) => item.gender === "Women")
               .flatMap((item) =>
                 typeof item.style === "string"
                   ? item.style.split(",").map((s) => s.trim())
@@ -50,6 +51,7 @@ export default function FilterWoman({ selectedFilters, setSelectedFilters }) {
         const uniqueColors = [
           ...new Set(
             allData
+              .filter((item) => item.gender === "Women")
               .flatMap((item) =>
                 Array.isArray(item.color)
                   ? item.color
@@ -64,6 +66,7 @@ export default function FilterWoman({ selectedFilters, setSelectedFilters }) {
         const uniqueSizes = [
           ...new Set(
             allData
+              .filter((item) => item.gender === "Women")
               .flatMap((item) =>
                 Array.isArray(item.size)
                   ? item.size
@@ -74,6 +77,33 @@ export default function FilterWoman({ selectedFilters, setSelectedFilters }) {
               .filter(Boolean)
           ),
         ];
+
+        const getHexCodeForColor = (colorName) => {
+          switch (colorName.toLowerCase()) {
+            case "purple":
+              return "#D946EF";
+            case "pink":
+              return "#EC4899";
+            case "black":
+              return "#000000";
+            case "white":
+              return "#FFFFFF";
+            case "grey":
+              return "#A1A1AA";
+            case "red":
+              return "#EF4444";
+            case "blue":
+              return "#3B82F6";
+            case "green":
+              return "#22C55E";
+            case "yellow":
+              return "#FACC15";
+            case "orange":
+              return "#FB923C";
+            default:
+              return "#D4D4D4";
+          }
+        };
 
         const formattedColors = uniqueColors.map((colorName) => ({
           name: colorName,
@@ -90,33 +120,6 @@ export default function FilterWoman({ selectedFilters, setSelectedFilters }) {
       } catch (err) {
         console.error("Gagal mengambil data kategori:", err);
         setLoading(false);
-      }
-    };
-
-    const getHexCodeForColor = (colorName) => {
-      switch (colorName.toLowerCase()) {
-        case "purple":
-          return "#D946EF";
-        case "pink":
-          return "#EC4899";
-        case "black":
-          return "#000000";
-        case "white":
-          return "#FFFFFF";
-        case "grey":
-          return "#A1A1AA";
-        case "red":
-          return "#EF4444";
-        case "blue":
-          return "#3B82F6";
-        case "green":
-          return "#22C55E";
-        case "yellow":
-          return "#FACC15";
-        case "orange":
-          return "#FB923C";
-        default:
-          return "#D4D4D4";
       }
     };
 
@@ -139,10 +142,9 @@ export default function FilterWoman({ selectedFilters, setSelectedFilters }) {
   if (loading) return <p className="text-gray-500">Memuat filter...</p>;
 
   return (
-    // Menghilangkan `max-w-xs` dari setiap div filter
-    <div className="w-full inline-flex flex-col justify-start items-start gap-8 px-2">
+    <div className="w-full flex flex-col gap-8">
       {/* Header */}
-      <div className="flex items-center justify-between w-full">
+      <div className="flex items-center justify-between w-full pb-4 border-b border-gray-200">
         <span className="text-zinc-600 text-lg font-semibold">Filter</span>
         <LuSettings2 className="text-zinc-600 rotate-90" size={24} />
       </div>
@@ -158,7 +160,7 @@ export default function FilterWoman({ selectedFilters, setSelectedFilters }) {
             return (
               <div
                 key={index}
-                className={`flex justify-between items-center px-3 py-2 rounded-md cursor-pointer hover:bg-zinc-100 transition`}
+                className="flex justify-between items-center px-3 py-2 rounded-md cursor-pointer hover:bg-zinc-100 transition"
                 onClick={() => handleFilterSelection("categories", item)}
               >
                 <span
@@ -223,11 +225,11 @@ export default function FilterWoman({ selectedFilters, setSelectedFilters }) {
               return (
                 <div
                   key={idx}
-                  className="flex flex-col items-center gap-1 cursor-pointer hover:scale-105 transition"
+                  className="flex flex-col items-center gap-1 cursor-pointer"
                   onClick={() => handleFilterSelection("colors", name)}
                 >
                   <div
-                    className={`w-9 h-9 rounded-xl ${
+                    className={`w-9 h-9 rounded-xl border border-gray-200 ${
                       isActive ? "ring-2 ring-offset-2 ring-purple-600" : ""
                     }`}
                     style={{ backgroundColor: hex }}
@@ -250,14 +252,14 @@ export default function FilterWoman({ selectedFilters, setSelectedFilters }) {
       {filterData.sizes?.length > 0 && (
         <div className="flex flex-col gap-4 w-full">
           <span className="text-zinc-600 text-lg font-semibold">Size</span>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="flex flex-wrap gap-2">
             {filterData.sizes.map((size, idx) => {
               const isActive = selectedFilters.sizes.includes(size);
               return (
                 <div
                   key={idx}
                   onClick={() => handleFilterSelection("sizes", size)}
-                  className={`w-16 h-8 flex items-center justify-center border border-stone-300 rounded-lg text-sm font-semibold cursor-pointer transition ${
+                  className={`min-w-[4rem] h-10 flex items-center justify-center border border-stone-300 rounded-lg px-4 text-sm font-semibold cursor-pointer transition-colors ${
                     isActive
                       ? "bg-black text-white"
                       : "text-neutral-700 hover:bg-gray-200"

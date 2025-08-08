@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { TbShoppingBagPlus } from "react-icons/tb";
 import { MdOutlineStar } from "react-icons/md";
@@ -218,7 +218,8 @@ export default function CategoryMen() {
                           <div className="flex flex-col">
                             {hasDiscount && (
                               <span className="text-gray-400 text-sm line-through">
-                                Rp{Number(item.price).toLocaleString("id-ID")}
+                                Rp
+                                {Number(item.price).toLocaleString("id-ID")}
                               </span>
                             )}
                             <span className="text-black text-xl font-medium">
@@ -227,7 +228,7 @@ export default function CategoryMen() {
                             </span>
                           </div>
                           <button
-                            onClick={(e) => handleAddToCart(e, item)} // Event stopPropagation sudah ada di dalam fungsi
+                            onClick={(e) => handleAddToCart(e, item)}
                             className="p-2 bg-gray-100 rounded-lg hover:bg-gray-300 transition cursor-pointer"
                           >
                             <TbShoppingBagPlus className="text-black text-xl" />

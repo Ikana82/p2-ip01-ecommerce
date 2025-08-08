@@ -24,8 +24,24 @@ export default function EtalaseMen() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleAddToCart = (product) => {
-    dispatch(addToCart({ ...product, quantity: 1 }));
+  const handleAddToCart = (e, product) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const hasDiscount = product.discountPrice > 0;
+    const discountedPrice = hasDiscount
+      ? product.price - (product.price * product.discountPrice) / 100
+      : product.price;
+
+    dispatch(
+      addToCart({
+        ...product,
+        originalPrice: product.price,
+        price: discountedPrice,
+        discount: product.discountPrice || 0,
+        quantity: 1,
+      })
+    );
     Swal.fire({
       title: "Added to Cart!",
       text: `${product.name} has been added to your shopping bag.`,
@@ -60,10 +76,8 @@ export default function EtalaseMen() {
       try {
         let q = query(collection(db, "products"));
 
-        // Filter by gender
         q = query(q, where("gender", "==", "Men"));
 
-        // Filter by category
         if (filter) {
           q = query(q, where("category", "==", filter));
         }
@@ -74,7 +88,6 @@ export default function EtalaseMen() {
           ...doc.data(),
         }));
 
-        // Sort on the client-side
         if (sort === "asc") {
           fetchedProducts.sort((a, b) => a.price - b.price);
         } else if (sort === "desc") {
@@ -108,11 +121,9 @@ export default function EtalaseMen() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4 flex flex-col gap-6">
+    <div className="max-w-6xl mx-auto p-4 flex flex-col gap-8">
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
-        {/* Search & Filter Category in one div */}
         <div className="flex flex-col sm:flex-row gap-4 w-full">
-          {/* Search */}
           <div className="relative w-full sm:w-1/2">
             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
@@ -120,15 +131,14 @@ export default function EtalaseMen() {
               placeholder="Search men's product name..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200 shadow-sm"
             />
           </div>
 
-          {/* Filter Category */}
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="select select-bordered w-full sm:w-1/2"
+            className="select select-bordered w-full sm:w-1/2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500 transition-all duration-200"
           >
             <option value="">All Categories</option>
             {categories.map((cat) => (
@@ -139,7 +149,6 @@ export default function EtalaseMen() {
           </select>
         </div>
 
-        {/* Sort Buttons */}
         <div className="flex gap-2">
           <button
             className={`p-2 rounded border ${
@@ -164,7 +173,6 @@ export default function EtalaseMen() {
         </div>
       </div>
 
-      {/* Product Grid */}
       {loading ? (
         <div className="text-center py-10 text-gray-500">
           <span className="loading loading-spinner text-neutral"></span>
@@ -183,55 +191,82 @@ export default function EtalaseMen() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="border border-gray-200 rounded-lg p-3 hover:shadow-md transition"
-            >
-              <div
-                onClick={() => navigate(`/product/${product.id}`)}
-                className="aspect-[3/4] overflow-hidden rounded-lg cursor-pointer"
-              >
-                <img
-                  src={product.imgUrl || product.imageUrls?.[0]}
-                  alt={product.name}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="mt-3">
-                <div className="text-sm text-gray-500 font-semibold">
-                  {product.brand}
-                </div>
-                <div className="text-base font-medium text-gray-900">
-                  {product.name}
-                </div>
-                <div className="text-sm text-gray-500 flex items-center gap-2 mt-1">
-                  <MdOutlineStar className="text-yellow-400 w-5 h-5" />
-                  {product.rating || "N/A"} - Happy Shopping!!
-                </div>
-                <div className="flex justify-between items-center mt-3">
-                  <div className="text-lg font-bold text-zinc-800">
-                    Rp{Number(product.price).toLocaleString("id-ID")}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {products.map((item) => {
+            const hasDiscount = item.discountPrice > 0;
+            const discountedPrice = hasDiscount
+              ? item.price - (item.price * item.discountPrice) / 100
+              : item.price;
+
+            return (
+              <div key={item.id}>
+                <div
+                  className="flex flex-col items-start gap-3 border border-gray-200 bg-white hover:shadow-sm rounded-[10px] p-2 transition-shadow duration-200 cursor-pointer"
+                  onClick={() => navigate(`/product/${item.id}`)}
+                >
+                  <img
+                    src={item.imgUrl?.[0]}
+                    alt={item.name}
+                    className="w-full h-80 object-cover rounded-[10px]"
+                  />
+                  <div className="flex flex-col gap-1 w-full px-2">
+                    <p className="text-zinc-900 text-lg font-medium truncate">
+                      {item.name}
+                    </p>
+                    <p className="text-zinc-500 text-sm font-normal">
+                      {item.category}
+                    </p>
+
+                    {/* Rating + Discount */}
+                    <div className="flex items-center justify-between text-sm text-gray-500 mt-1">
+                      <div className="flex items-center gap-1">
+                        <MdOutlineStar className="text-yellow-400 w-5 h-5" />
+                        {item.rating || "N/A"}
+                      </div>
+                      {hasDiscount && (
+                        <span className="text-green-600 font-bold">
+                          Discount {item.discountPrice}%
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Price + Actions */}
+                    <div className="flex justify-between items-center w-full mt-1">
+                      <div className="flex flex-col">
+                        {hasDiscount && (
+                          <span className="text-gray-400 text-sm line-through">
+                            Rp
+                            {Number(item.price).toLocaleString("id-ID")}
+                          </span>
+                        )}
+                        <span className="text-black text-lg font-medium">
+                          Rp
+                          {Number(discountedPrice).toLocaleString("id-ID")}
+                        </span>
+                      </div>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/product/${item.id}`);
+                          }}
+                          className="w-8 h-8 p-1.5 bg-gray-100 rounded-lg hover:bg-gray-300 transition cursor-pointer"
+                        >
+                          <FaRegEye className="text-black text-xl" />
+                        </button>
+                        <button
+                          onClick={(e) => handleAddToCart(e, item)}
+                          className="w-8 h-8 p-1.5 bg-gray-100 rounded-lg hover:bg-gray-300 transition cursor-pointer"
+                        >
+                          <TbShoppingBagPlus className="text-black text-xl" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      className="p-2 rounded border hover:bg-gray-200"
-                      onClick={() => navigate(`/product/${product.id}`)}
-                    >
-                      <FaRegEye />
-                    </button>
-                    <button
-                      className="p-2 rounded border hover:bg-gray-200"
-                      onClick={() => handleAddToCart(product)}
-                    >
-                      <TbShoppingBagPlus />
-                    </button>
-                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

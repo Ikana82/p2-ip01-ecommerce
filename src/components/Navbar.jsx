@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { useNavigate, useLocation, Link } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { signOut } from "firebase/auth";
 import Swal from "sweetalert2";
@@ -7,9 +7,9 @@ import { AuthContext } from "../contexts/AuthContext";
 import logo from "../assets/Kanara-logo.png";
 import { auth } from "../firebase/firebase";
 import { deleteCart } from "../redux/features/cartSlice";
+import { CgProfile } from "react-icons/cg";
 
 function Navbar() {
-  const [showSearch, setShowSearch] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
@@ -47,9 +47,21 @@ function Navbar() {
     try {
       await signOut(auth);
       dispatch(deleteCart());
+      Swal.fire({
+        icon: "success",
+        title: "Logged Out!",
+        text: "You have been logged out successfully.",
+        showConfirmButton: false,
+        timer: 1500,
+      });
       navigate("/");
     } catch (error) {
-      console.log(error);
+      console.error("Failed to log out:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Logout Failed!",
+        text: "There was an error during logout. Please try again.",
+      });
     }
   }
 
@@ -71,19 +83,13 @@ function Navbar() {
               className="menu menu-sm dropdown-content mt-2 p-2 shadow bg-white rounded-box w-40 text-sm z-[5]"
             >
               <li>
-                <Link to="/products" className="hover:bg-black">
-                  Product
-                </Link>
+                <span onClick={() => navigate("/products")}>Product</span>
               </li>
               <li>
-                <Link to="/men" className="hover:bg-black">
-                  Men
-                </Link>
+                <span onClick={() => navigate("/men")}>Men</span>
               </li>
               <li>
-                <Link to="/woman" className="hover:bg-black">
-                  Women
-                </Link>
+                <span onClick={() => navigate("/woman")}>Women</span>
               </li>
             </ul>
           </div>
@@ -100,64 +106,47 @@ function Navbar() {
           {/* Menu untuk Desktop */}
           <ul className="menu menu-horizontal gap-3 hidden lg:flex text-base lg:text-lg">
             <li>
-              <Link
-                to="/products"
-                className={`hover:font-bold ${
-                  isActive("/products") ? "font-bold text-black " : ""
+              <span
+                onClick={() => navigate("/products")}
+                className={`cursor-pointer hover:font-bold ${
+                  isActive("/products") ? "font-bold text-black" : ""
                 }`}
               >
                 Product
-              </Link>
+              </span>
             </li>
             <li>
-              <Link
-                to="/men"
-                className={`hover:font-bold ${
-                  isActive("/men") ? "font-bold text-black " : ""
+              <span
+                onClick={() => navigate("/men")}
+                className={`cursor-pointer hover:font-bold ${
+                  isActive("/men") ? "font-bold text-black" : ""
                 }`}
               >
                 Men
-              </Link>
+              </span>
             </li>
             <li>
-              <Link
-                to="/woman"
-                className={`hover:font-bold ${
+              <span
+                onClick={() => navigate("/woman")}
+                className={`cursor-pointer hover:font-bold ${
                   isActive("/woman") ? "font-bold text-black" : ""
                 }`}
               >
                 Women
-              </Link>
+              </span>
             </li>
           </ul>
         </div>
 
-        {/* Right */}
+        {/* Right side of navbar */}
         <div className="navbar-end flex items-center gap-3 sm:gap-2 md:gap-4 ml-auto px-2 sm:px-4">
-          {/* Notification */}
-          {/* <button className="btn btn-ghost btn-circle hover:bg-gray-300 text-gray-600">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-              />
-            </svg>
-          </button> */}
-
-          {/* Cart */}
+          {/* Cart Dropdown */}
           <div className="dropdown dropdown-end pr-2">
             <div
               tabIndex={0}
               role="button"
               className="btn btn-ghost btn-circle"
+              onClick={handleViewCart}
             >
               <div className="indicator">
                 <svg
@@ -186,7 +175,7 @@ function Navbar() {
               <div className="card-body">
                 <span className="text-lg font-bold">{totalProduk} Items</span>
                 <span className="text-info">
-                  Subtotal: Rp{subtotal.toFixed(2)}
+                  Subtotal: Rp{subtotal.toLocaleString("id-ID")}
                 </span>
                 <div className="card-actions">
                   <button
@@ -200,37 +189,47 @@ function Navbar() {
             </div>
           </div>
 
-          {/* Avatar */}
-          <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle avatar"
-            >
-              <div className="w-10 rounded-full">
-                <img
-                  alt="User avatar"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                />
+          {user ? (
+            <div className="dropdown dropdown-end">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-circle avatar"
+              >
+                <div className="w-10 rounded-full">
+                  <img
+                    alt="User avatar"
+                    src="https://i.pinimg.com/736x/cc/02/8d/cc028d99425473e1b6517493a8ed1e5a.jpg"
+                  />
+                </div>
               </div>
+              <ul
+                tabIndex={0}
+                className="menu menu-md dropdown-content bg-base-100 rounded-box z-[5] mt-3 w-52 p-2 shadow"
+              >
+                <li>
+                  <span className="justify-between">
+                    Profile
+                    <span className="badge">New</span>
+                  </span>
+                </li>
+                <li>
+                  <span>Settings</span>
+                </li>
+                <li>
+                  <button onClick={handleLogout}>Logout</button>
+                </li>
+              </ul>
             </div>
-            <ul
-              tabIndex={0}
-              className="menu menu-md dropdown-content bg-base-100 rounded-box z-[5] mt-3 w-52 p-2 shadow"
+          ) : (
+            <button
+              onClick={() => navigate("/login")}
+              className="btn btn-ghost rounded-full text-zinc-700 hover:bg-gray-200 gap-1.5"
             >
-              <li>
-                <a className="justify-between">
-                  Profile <span className="badge">New</span>
-                </a>
-              </li>
-              <li>
-                <a>Settings</a>
-              </li>
-              <li>
-                <button onClick={handleLogout}>Logout</button>
-              </li>
-            </ul>
-          </div>
+              <CgProfile className="text-2xl" />
+              <span>Login</span>
+            </button>
+          )}
         </div>
       </div>
     </>
