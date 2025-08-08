@@ -13,7 +13,7 @@ import { FaRegEye } from "react-icons/fa";
 import { TbShoppingBagPlus } from "react-icons/tb";
 import { FiSearch } from "react-icons/fi";
 import { useNavigate } from "react-router";
-import notFoundImage from "../assets/NotFound.png";
+// import notFoundImage from "../assets/NotFound.png";
 
 import { addToCart } from "../redux/features/cartSlice";
 import { useDispatch } from "react-redux";
