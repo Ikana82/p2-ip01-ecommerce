@@ -13,12 +13,11 @@ const cartSlice = createSlice({
 
       if (existingItem) {
         existingItem.quantity += quantity;
-        existingItem.price = finalPrice;
-        existingItem.discount = discount || 0;
       } else {
         state.push({
           ...action.payload,
-          price: finalPrice,
+          price,
+          finalPrice,
           quantity,
           discount: discount || 0,
         });

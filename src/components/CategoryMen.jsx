@@ -18,7 +18,7 @@ import Swal from "sweetalert2";
 
 const PAGE_LIMIT = 5;
 
-export default function CategoryWoman() {
+export default function CategoryMen() {
   const [menProducts, setMenProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -70,7 +70,22 @@ export default function CategoryWoman() {
   const handleAddToCart = (e, product) => {
     e.preventDefault();
     e.stopPropagation();
-    dispatch(addToCart({ ...product, quantity: 1 }));
+
+    const hasDiscount = product.discountPrice > 0;
+    const discountedPrice = hasDiscount
+      ? product.price - (product.price * product.discountPrice) / 100
+      : product.price;
+
+    dispatch(
+      addToCart({
+        ...product,
+        originalPrice: product.price,
+        price: discountedPrice,
+        discount: product.discountPrice || 0,
+        quantity: 1,
+      })
+    );
+
     Swal.fire({
       title: "Added to Cart!",
       text: `${product.name} has been added to your shopping bag.`,
