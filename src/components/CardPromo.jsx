@@ -18,7 +18,7 @@ export default function CardPromo() {
           className="w-full h-full object-cover"
         />
         <div className="z-10 w-full h-full bg-black/10 p-6 flex flex-col justify-end items-start text-white space-y-2 absolute top-0 left-0">
-          <p className="text-lg font-bold">Low Price</p>
+          <p className="text-lg font-bold">AAALow Price</p>
           <h3 className="text-3xl font-extrabold leading-tight">
             High Coziness
           </h3>

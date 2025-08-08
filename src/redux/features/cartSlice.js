@@ -5,14 +5,23 @@ const cartSlice = createSlice({
   initialState: [],
   reducers: {
     addToCart: (state, action) => {
-      const { id, quantity } = action.payload;
+      const { id, quantity, price, discount } = action.payload;
       const existingItem = state.find((item) => item.id === id);
-      const parsedStock = Number(quantity) || 1;
+
+      const discountAmount = discount ? (price * discount) / 100 : 0;
+      const finalPrice = price - discountAmount;
 
       if (existingItem) {
-        existingItem.quantity += parsedStock;
+        existingItem.quantity += quantity;
+        existingItem.price = finalPrice;
+        existingItem.discount = discount || 0;
       } else {
-        state.push({ ...action.payload, stock: parsedStock });
+        state.push({
+          ...action.payload,
+          price: finalPrice,
+          quantity,
+          discount: discount || 0,
+        });
       }
     },
 
@@ -20,20 +29,14 @@ const cartSlice = createSlice({
       return state.filter((item) => item.id !== action.payload.id);
     },
 
-    deleteCart: () => {
-      return [];
-    },
+    deleteCart: () => [],
 
     editCartProduct: (state, action) => {
-      return state.map((item) => {
-        if (item.id === action.payload.id) {
-          return {
-            ...item,
-            quantity: action.payload.quantity,
-          };
-        }
-        return item;
-      });
+      return state.map((item) =>
+        item.id === action.payload.id
+          ? { ...item, quantity: action.payload.quantity }
+          : item
+      );
     },
   },
 });

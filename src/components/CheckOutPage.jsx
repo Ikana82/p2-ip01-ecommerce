@@ -5,6 +5,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import Swal from "sweetalert2";
 import { MdNavigateNext } from "react-icons/md";
+import { addToCartWithStock } from "../redux/features/cartActions";
 
 export default function CheckOutPage() {
   const cartItems = useSelector((state) => state.cart);

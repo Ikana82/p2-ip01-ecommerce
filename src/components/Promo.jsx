@@ -5,7 +5,7 @@ export default function Promo() {
   const navigate = useNavigate();
 
   const handleExploreClick = () => {
-    navigate("/promo");
+    navigate("/lowprice");
   };
 
   return (
@@ -26,7 +26,7 @@ export default function Promo() {
             <div className="text-3xl font-extrabold leading-tight">
               High Coziness
             </div>
-            <div className="text-base font-medium">UPTO 50% OFF</div>
+            <div className="text-base font-medium">UP TO 30% OFF</div>
             <button
               onClick={handleExploreClick}
               className="text-white text-xl font-extrabold underline"
@@ -51,7 +51,7 @@ export default function Promo() {
             <div className="text-3xl font-extrabold leading-tight">
               Brezzy SUmmer Style
             </div>
-            <div className="text-base font-medium">UPTO 50% OFF</div>
+            <div className="text-base font-medium">UP TO 10% OFF</div>
             <button
               onClick={handleExploreClick}
               className="text-white text-xl font-extrabold underline"

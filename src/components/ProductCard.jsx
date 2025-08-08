@@ -3,8 +3,14 @@ import { MdOutlineStar } from "react-icons/md";
 import { FaHeart, FaRegEye } from "react-icons/fa";
 import { TbShoppingBagPlus } from "react-icons/tb";
 import { Link } from "react-router";
+// import { addToCartWithStock } from "../redux/features/cartActions";
 
 const ProductCard = ({ product }) => {
+  const dispatch = useDispatch();
+  // const handleAddToCart = () => {
+  //   // dispatch(addToCartWithStock(product, 1));
+  // };
+
   return (
     <div className="flex flex-col gap-4 border border-gray-100 rounded-xl p-2 transition-all duration-300 ease-in-out hover:border-gray-300 hover:shadow-md cursor-pointer">
       {/* Gambar Produk */}
@@ -23,7 +29,6 @@ const ProductCard = ({ product }) => {
       <div className="flex flex-col items-start px-2">
         {/* Nama Produk */}
         <div className="flex flex-col gap-1.5">
-          {/* Brand - Asumsi brand belum ada di Firestore, jadi dikosongkan */}
           <div className="text-sm font-bold text-zinc-700">Brand</div>
           <div className="text-base text-zinc-800 font-medium leading-tight">
             {product.name}
@@ -38,9 +43,7 @@ const ProductCard = ({ product }) => {
               {product.rating}
             </div>
           </div>
-          <div className="text-sm text-zinc-500 font-medium">
-            (132 reviews) {/* Nilai hardcoded, bisa disesuaikan */}
-          </div>
+          <div className="text-sm text-zinc-500 font-medium">(132 reviews)</div>
         </div>
 
         {/* Harga dan Aksi */}
@@ -55,7 +58,10 @@ const ProductCard = ({ product }) => {
             >
               <FaRegEye className="w-5 h-5 text-zinc-800" />
             </Link>
-            <button className="w-10 h-10 p-2 bg-white rounded-lg shadow-inner border border-gray-200 flex items-center justify-center hover:bg-gray-200">
+            <button
+              onClick={handleAddToCart}
+              className="w-10 h-10 p-2 bg-white rounded-lg shadow-inner border border-gray-200 flex items-center justify-center hover:bg-gray-200"
+            >
               <TbShoppingBagPlus className="w-5 h-5 text-zinc-800" />
             </button>
           </div>

@@ -4,18 +4,17 @@ import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 const banners = [
   {
     imageUrl:
-      "https://im.uniqlo.com/global-cms/spa/res284104c9ad18078c25510419f75247a3fr.jpg",
-    title: "Denim Jersey Tapered Pants",
-    headline: "Summer Value Pack",
-    subtitle:
-      "Practical & versatile jeans, perfect for your modest casual look.",
+      "https://im.uniqlo.com/global-cms/spa/resb65ee92f69932ae564e0eb36458481c1fr.jpg",
+    title: "Zip Up Short Jacket",
+    headline: "Fall Value Pack",
+    subtitle: "Versatile, cropped jacket. Classic & perfect for any styling.",
   },
   {
     imageUrl:
-      "https://im.uniqlo.com/global-cms/spa/res70c9031a219ac02e3645995b83a6bf17fr.jpg",
-    title: "Dry Pique Striped Polo Shirt",
+      "https://im.uniqlo.com/global-cms/spa/resb0a9259f1f7c62ce2f62129a6d092b87fr.jpg",
+    title: "AIRism Cotton Pique Polo Shirt",
     headline: "New Arrival 2025",
-    subtitle: "Light & smooth classic polo, goes well with any styling.",
+    subtitle: "Made from 'AIRism' material, comfy for everyday activities.",
   },
   {
     videoUrl:

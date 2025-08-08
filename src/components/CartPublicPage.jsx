@@ -1,21 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import { MdNavigateNext } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
-import {
-  addToCart,
-  removeFromCart,
-  editCartProduct,
-} from "../redux/features/cartSlice";
+import { removeFromCart, editCartProduct } from "../redux/features/cartSlice";
 import { rupiahFormat } from "../utils/rupiahFormatter";
+import { addToCartWithStock } from "../redux/features/cartActions";
 
 export default function CartPublicPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cartItems = useSelector((state) => state.cart);
-  console.log(cartItems);
 
   const handleIncrement = (id) => {
     const item = cartItems.find((item) => item.id === id);
@@ -49,10 +45,11 @@ export default function CartPublicPage() {
   };
 
   const handleProceedToCheckout = () => {
+    dispatch(addToCartWithStock({ ...product, quantity: 1 }));
     if (cartItems.length === 0) {
       Swal.fire(
-        "Keranjang kosong",
-        "Tambahkan produk sebelum checkout.",
+        "Your cart is empty",
+        "Please add some products before checkout.",
         "warning"
       );
       return;
@@ -63,16 +60,16 @@ export default function CartPublicPage() {
 
   return (
     <div className="max-w-[1445px] mx-auto flex flex-col items-center gap-8 lg:px-24 py-4">
-      {/* Params */}
+      {/* Breadcrumb */}
       <div className="w-full flex flex-col gap-3">
         <div className="flex items-center gap-1 text-sm font-medium text-zinc-500">
-          <span className="cursor-pointer hover:text-black">Product</span>
+          <span className="cursor-pointer hover:text-black">Products</span>
           <MdNavigateNext />
           <span className="text-neutral-700">Cart</span>
         </div>
         <div className="text-sm text-zinc-500 leading-snug">
-          Login successful! Make sure your shopping list is correct before
-          completing the checkout process.
+          Login successful! Please review your shopping cart before proceeding
+          to checkout.
         </div>
       </div>
 
@@ -120,7 +117,6 @@ export default function CartPublicPage() {
                   >
                     -
                   </button>
-
                   <input
                     type="number"
                     min={1}
@@ -130,7 +126,6 @@ export default function CartPublicPage() {
                     }
                     className="w-12 text-center text-sm font-medium text-neutral-700 bg-gray-50 focus:outline-none"
                   />
-
                   <button
                     className="text-lg font-bold"
                     onClick={() => handleIncrement(item.id)}
@@ -139,7 +134,6 @@ export default function CartPublicPage() {
                   </button>
                 </div>
               </div>
-
               <div className="text-center text-sm font-bold text-neutral-700">
                 {rupiahFormat(calculateSubtotal(item.price, item.quantity))}
               </div>
@@ -154,7 +148,7 @@ export default function CartPublicPage() {
             </div>
 
             {/* Mobile */}
-            <div className="md:hidden w-100 relative border rounded-[5px] bg-white py-3 px-4">
+            <div className="md:hidden w-full relative border rounded-[5px] bg-white py-3 px-4">
               <img
                 className="w-16 h-16 absolute left-4 top-4 rounded-[5px]"
                 src={item.image}
@@ -167,7 +161,7 @@ export default function CartPublicPage() {
                 {item.color}, {item.size}
               </div>
               <div className="ml-24 mt-1 text-black text-xs font-bold">
-                Rp{item.price}
+                {rupiahFormat(item.price)}
               </div>
               <div className="absolute left-[223px] top-[64px] flex gap-2">
                 <button
@@ -199,38 +193,18 @@ export default function CartPublicPage() {
         ))}
       </div>
 
-      {/* Bottom Section */}
+      {/* Summary Section */}
       <div className="w-full flex flex-col lg:flex-row justify-between gap-10">
-        <div className="max-w-md flex flex-col gap-4">
-          {/* <h3 className="text-lg font-semibold text-neutral-700">
-            Discount Codes
-          </h3>
-          <p className="text-sm text-zinc-500">
-            Enter your coupon code if you have one
-          </p>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="Coupon Code"
-              className="flex-1 px-4 py-2 rounded-xl border border-stone-300 bg-white"
-            />
-            <button className="px-4 py-2 bg-black text-white rounded-full text-sm font-semibold">
-              Apply Coupon
-            </button>
-          </div>
-          <button className="mt-4 px-5 py-3 rounded-lg border border-stone-300 text-sm font-semibold text-neutral-700">
-            Continue Shopping
-          </button> */}
-        </div>
+        <div className="max-w-md flex flex-col gap-4"></div>
 
         <div className="bg-zinc-100 w-full max-w-md p-6 rounded-lg">
           <div className="flex justify-between text-sm font-medium text-neutral-700">
-            <span>Sub Total</span>
+            <span>Subtotal</span>
             <span>{rupiahFormat(calculateGrandTotal())}</span>
           </div>
           <div className="flex justify-between text-sm font-medium text-neutral-700 mt-4">
             <span>Shipping</span>
-            <span>Rp5.000</span>
+            <span>Rp5,000</span>
           </div>
           <hr className="my-4 border-stone-300" />
           <div className="flex justify-between text-sm font-bold text-neutral-700">
@@ -241,7 +215,7 @@ export default function CartPublicPage() {
             onClick={handleProceedToCheckout}
             className="w-full mt-6 px-5 py-3 bg-black text-white rounded-lg text-sm font-semibold"
           >
-            Proceed To Checkout
+            Proceed to Checkout
           </button>
         </div>
       </div>

@@ -13,6 +13,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import AuthContextProvider from "./contexts/AuthContext";
 import CheckOutPage from "./components/CheckOutPage";
+import PromoLow from "./components/PromoLow";
 
 export default function App() {
   return (
@@ -26,10 +27,12 @@ export default function App() {
             <Route path="/woman" element={<WomenPublicPage />} />
             <Route path="/product/:id" element={<DetailProduct />} />
             <Route path="/cart" element={<CartPublicPage />} />
+            <Route path="/lowprice" element={<PromoLow />} />
+            <Route path="/checkout" element={<CheckOutPage />} />
           </Route>
 
           {/* Routes di luar layout Public */}
-          <Route path="/checkout" element={<CheckOutPage />} />
+
           <Route path="/add-new" element={<AddProductPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
