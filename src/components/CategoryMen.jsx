@@ -120,6 +120,7 @@ export default function CategoryMen() {
               ? "bg-black text-white font-bold"
               : "bg-white text-zinc-800 border border-gray-300"
           } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+          disabled={loading}
         >
           {i}
         </button>
@@ -129,7 +130,7 @@ export default function CategoryMen() {
   };
 
   return (
-    <section className="w-full px-10 md:px-6 pt-8">
+    <section className="w-full px-6 md:px-10 pt-8">
       {/* Header */}
       <div className="flex items-center justify-between px-4 mb-8">
         <div className="flex items-center gap-2">
@@ -173,8 +174,19 @@ export default function CategoryMen() {
         )}
 
         {!loading && menProducts.length > 0 && (
-          <div className="px-4 md:px-8">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 w-full">
+          <div className="px-2 md:px-8">
+            <div
+              className="
+                grid 
+                grid-cols-1 
+                sm:grid-cols-2 
+                md:grid-cols-3 
+                lg:grid-cols-4 
+                xl:grid-cols-5 
+                gap-4 
+                w-full
+              "
+            >
               {menProducts.map((item) => {
                 const hasDiscount = item.discountPrice > 0;
                 const discountedPrice = hasDiscount
@@ -184,30 +196,30 @@ export default function CategoryMen() {
                 return (
                   <div key={item.id}>
                     <div
-                      className="flex flex-col items-start gap-3 border border-gray-200 bg-white hover:shadow-sm rounded-[10px] p-2 transition-shadow duration-200 cursor-pointer"
+                      className="flex flex-col items-start gap-3 border border-gray-200 bg-white hover:shadow-sm rounded-[10px] p-3 transition-shadow duration-200 cursor-pointer"
                       onClick={() => navigate(`/product/${item.id}`)}
                     >
                       <img
                         src={item.imgUrl || item.imageUrls?.[0]}
                         alt={item.name}
-                        className="w-full h-80 object-cover rounded-[10px]"
+                        className="w-full h-60 sm:h-72 md:h-80 object-cover rounded-[10px]"
                       />
-                      <div className="flex flex-col gap-1 w-full px-2">
-                        <p className="text-zinc-900 text-lg font-medium truncate">
+                      <div className="flex flex-col gap-1 w-full px-1">
+                        <p className="text-zinc-900 text-base sm:text-lg font-medium truncate">
                           {item.name}
                         </p>
-                        <p className="text-zinc-500 text-sm font-normal">
+                        <p className="text-zinc-500 text-xs sm:text-sm font-normal">
                           {item.category}
                         </p>
 
                         {/* Rating + Discount */}
-                        <div className="flex items-center justify-between text-sm text-gray-500 mt-1">
+                        <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500 mt-1">
                           <div className="flex items-center gap-1">
-                            <MdOutlineStar className="text-yellow-400 w-5 h-5" />
+                            <MdOutlineStar className="text-yellow-400 w-4 h-4 sm:w-5 sm:h-5" />
                             {item.rating || "N/A"}
                           </div>
                           {hasDiscount && (
-                            <span className="text-green-600 font-bold">
+                            <span className="text-green-600 font-bold text-xs sm:text-sm">
                               Discount {item.discountPrice}%
                             </span>
                           )}
@@ -217,12 +229,12 @@ export default function CategoryMen() {
                         <div className="flex justify-between items-center w-full mt-1">
                           <div className="flex flex-col">
                             {hasDiscount && (
-                              <span className="text-gray-400 text-sm line-through">
+                              <span className="text-gray-400 text-xs sm:text-sm line-through">
                                 Rp
                                 {Number(item.price).toLocaleString("id-ID")}
                               </span>
                             )}
-                            <span className="text-black text-xl font-medium">
+                            <span className="text-black text-lg sm:text-xl font-medium">
                               Rp
                               {Number(discountedPrice).toLocaleString("id-ID")}
                             </span>
@@ -230,8 +242,9 @@ export default function CategoryMen() {
                           <button
                             onClick={(e) => handleAddToCart(e, item)}
                             className="p-2 bg-gray-100 rounded-lg hover:bg-gray-300 transition cursor-pointer"
+                            aria-label={`Add ${item.name} to cart`}
                           >
-                            <TbShoppingBagPlus className="text-black text-xl" />
+                            <TbShoppingBagPlus className="text-black text-xl sm:text-2xl" />
                           </button>
                         </div>
                       </div>

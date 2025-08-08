@@ -17,14 +17,11 @@ export default function PromoLow() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Fungsi menambah ke cart dengan harga diskon
   const handleAddToCart = (product) => {
-    // Hitung harga final
     const finalPrice = product.discountPrice
       ? Math.round(product.price * (1 - product.discountPrice / 100))
       : product.price;
 
-    // Kirim ke redux dengan harga yang sudah diskon
     dispatch(addToCart({ ...product, price: finalPrice, quantity: 1 }));
 
     Swal.fire({
