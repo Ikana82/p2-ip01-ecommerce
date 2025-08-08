@@ -172,11 +172,7 @@ const ProductPublicPage = () => {
 
         {!loading && !error && filteredProducts.length === 0 && (
           <div className="flex justify-center items-center col-span-full flex-col p-8">
-            <img
-              src={notFoundImage}
-              alt="Products not found"
-              className="max-w-md w-full"
-            />
+            <img alt="Products not found" className="max-w-md w-full" />
             <p className="text-gray-500 text-lg mt-4">No products found</p>
           </div>
         )}
