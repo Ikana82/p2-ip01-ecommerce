@@ -8,7 +8,7 @@ import { BsCart3 } from "react-icons/bs";
 import { MdKeyboardArrowUp, MdKeyboardArrowDown } from "react-icons/md";
 import { FaCirclePlay } from "react-icons/fa6";
 
-import { addToCart } from "../redux/features/cartSlice";
+// import { addToCart } from "../redux/features/cartSlice";
 import { useDispatch } from "react-redux";
 
 function DetailProduct() {

@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { TbShoppingBagPlus } from "react-icons/tb";
 import { MdOutlineStar } from "react-icons/md";
@@ -26,6 +26,7 @@ export default function CategoryMen() {
   const [error, setError] = useState(null);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   async function fetchProducts(pageNumber) {
     setLoading(true);
@@ -68,8 +69,8 @@ export default function CategoryMen() {
   }
 
   const handleAddToCart = (e, product) => {
-    e.preventDefault();
     e.stopPropagation();
+    e.preventDefault();
 
     const hasDiscount = product.discountPrice > 0;
     const discountedPrice = hasDiscount
@@ -182,59 +183,58 @@ export default function CategoryMen() {
 
                 return (
                   <div key={item.id}>
-                    <Link to={`/product/${item.id}`}>
-                      <div className="flex flex-col items-start gap-3 border border-gray-200 bg-white hover:shadow-sm rounded-[10px] p-2 transition-shadow duration-200 cursor-pointer">
-                        <img
-                          src={item.imgUrl || item.imageUrls?.[0]}
-                          alt={item.name}
-                          className="w-full h-80 object-cover rounded-[10px]"
-                        />
-                        <div className="flex flex-col gap-1 w-full px-2">
-                          <p className="text-zinc-900 text-lg font-medium truncate">
-                            {item.name}
-                          </p>
-                          <p className="text-zinc-500 text-sm font-normal">
-                            {item.category}
-                          </p>
+                    <div
+                      className="flex flex-col items-start gap-3 border border-gray-200 bg-white hover:shadow-sm rounded-[10px] p-2 transition-shadow duration-200 cursor-pointer"
+                      onClick={() => navigate(`/product/${item.id}`)}
+                    >
+                      <img
+                        src={item.imgUrl || item.imageUrls?.[0]}
+                        alt={item.name}
+                        className="w-full h-80 object-cover rounded-[10px]"
+                      />
+                      <div className="flex flex-col gap-1 w-full px-2">
+                        <p className="text-zinc-900 text-lg font-medium truncate">
+                          {item.name}
+                        </p>
+                        <p className="text-zinc-500 text-sm font-normal">
+                          {item.category}
+                        </p>
 
-                          {/* Rating + Discount */}
-                          <div className="flex items-center justify-between text-sm text-gray-500 mt-1">
-                            <div className="flex items-center gap-1">
-                              <MdOutlineStar className="text-yellow-400 w-5 h-5" />
-                              {item.rating || "N/A"}
-                            </div>
+                        {/* Rating + Discount */}
+                        <div className="flex items-center justify-between text-sm text-gray-500 mt-1">
+                          <div className="flex items-center gap-1">
+                            <MdOutlineStar className="text-yellow-400 w-5 h-5" />
+                            {item.rating || "N/A"}
+                          </div>
+                          {hasDiscount && (
+                            <span className="text-green-600 font-bold">
+                              Discount {item.discountPrice}%
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Price */}
+                        <div className="flex justify-between items-center w-full mt-1">
+                          <div className="flex flex-col">
                             {hasDiscount && (
-                              <span className="text-green-600 font-bold">
-                                Discount {item.discountPrice}%
+                              <span className="text-gray-400 text-sm line-through">
+                                Rp{Number(item.price).toLocaleString("id-ID")}
                               </span>
                             )}
+                            <span className="text-black text-xl font-medium">
+                              Rp
+                              {Number(discountedPrice).toLocaleString("id-ID")}
+                            </span>
                           </div>
-
-                          {/* Price */}
-                          <div className="flex justify-between items-center w-full mt-1">
-                            <div className="flex flex-col">
-                              {hasDiscount && (
-                                <span className="text-gray-400 text-sm line-through">
-                                  Rp{Number(item.price).toLocaleString("id-ID")}
-                                </span>
-                              )}
-                              <span className="text-black text-xl font-medium">
-                                Rp
-                                {Number(discountedPrice).toLocaleString(
-                                  "id-ID"
-                                )}
-                              </span>
-                            </div>
-                            <button
-                              onClick={(e) => handleAddToCart(e, item)}
-                              className="p-2 bg-gray-100 rounded-lg hover:bg-gray-300 transition cursor-pointer"
-                            >
-                              <TbShoppingBagPlus className="text-black text-xl" />
-                            </button>
-                          </div>
+                          <button
+                            onClick={(e) => handleAddToCart(e, item)} // Event stopPropagation sudah ada di dalam fungsi
+                            className="p-2 bg-gray-100 rounded-lg hover:bg-gray-300 transition cursor-pointer"
+                          >
+                            <TbShoppingBagPlus className="text-black text-xl" />
+                          </button>
                         </div>
                       </div>
-                    </Link>
+                    </div>
                   </div>
                 );
               })}
