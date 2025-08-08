@@ -1,6 +1,13 @@
 import React from "react";
+import { useNavigate } from "react-router";
 
 export default function CallToAction() {
+  const navigate = useNavigate();
+
+  const handleShopNowClick = () => {
+    navigate("/products");
+  };
+
   return (
     <div className="flex items-center justify-center pt-8">
       <div
@@ -32,7 +39,10 @@ export default function CallToAction() {
               every day.
             </p>
 
-            <button className="bg-white text-neutral-800 text-sm sm:text-lg font-semibold py-2 sm:py-3 px-6 sm:px-11 rounded-lg hover:bg-gray-200 transition">
+            <button
+              onClick={handleShopNowClick}
+              className="bg-white text-neutral-800 text-sm sm:text-lg font-semibold py-2 sm:py-3 px-6 sm:px-11 rounded-lg hover:bg-gray-200 transition"
+            >
               Shop Now
             </button>
           </div>
