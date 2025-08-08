@@ -1,131 +1,174 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { addCategory } from "../redux/features/category/categorySlice.js";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useDispatch, useSelector } from "react-redux";
+import { addProduct } from "../redux/features/productSlice";
+import { fetchCategories } from "../redux/features/categorySlice";
+import Swal from "sweetalert2";
 
-export default function AddCategoryPage() {
-  const [category, setCategory] = useState("");
-  const [subCategory, setSubCategory] = useState([""]);
-  const [isLoading, setIsLoading] = useState(false);
+function AddCategoryPage() {
+  const [categoryName, setCategoryName] = useState("");
+  const [gender, setGender] = useState("");
+  const [style, setStyle] = useState("");
+  const [color, setColor] = useState("");
+  const [size, setSize] = useState("");
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubCategoryChange = (index, value) => {
-    const updated = [...subCategory];
-    updated[index] = value;
-    setSubCategory(updated);
-  };
-
-  const addMoreSubCategory = () => {
-    setSubCategory([...subCategory, ""]);
-  };
-
-  const deleteSubCategory = (index) => {
-    if (subCategory.length === 1) return;
-    setSubCategory(subCategory.filter((_, i) => i !== index));
-  };
-
-  const submitCategory = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!category.trim()) return toast.error("Category name is required.");
-    if (subCategory.some((sub) => !sub.trim()))
-      return toast.error("Sub-category cannot be empty.");
+    const newCategory = {
+      category: categoryName.split(",").map((item) => item.trim()),
+      gender: gender.split(",").map((item) => item.trim()),
+      style: style.split(",").map((item) => item.trim()),
+      color: color.split(",").map((item) => item.trim()),
+      size: size.split(",").map((item) => item.trim()),
+    };
 
-    setIsLoading(true);
     try {
-      await dispatch(addCategory({ category, subCategory }));
-      toast.success("Category added successfully!");
-      setTimeout(() => navigate("/list-category"), 2000);
+      await dispatch(addCategory(newCategory));
+      Swal.fire("Berhasil", "Kategori berhasil ditambahkan!", "success");
+      setCategoryName("");
+      setGender("");
+      setStyle("");
+      setColor("");
+      setSize("");
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to add category.");
-    } finally {
-      setIsLoading(false);
+      Swal.fire(
+        "Error",
+        "Gagal menambahkan kategori. Silakan coba lagi.",
+        "error"
+      );
     }
+  };
+
+  const handleNavigateHome = () => {
+    navigate("/");
   };
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} />
-      <main className="p-8 max-w-3xl mx-auto mt-4">
-        <form
-          onSubmit={submitCategory}
-          className="p-6 bg-white rounded-3xl shadow-md outline outline-red-200 flex flex-col gap-4"
-        >
-          <h2 className="text-zinc-800 text-xl font-semibold">
-            Add New Category
-          </h2>
-          <p className="text-sm text-gray-700">
-            Create a new category and its sub-categories.
-          </p>
-
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-bold text-zinc-800">
-              Category Name
-            </label>
-            <input
-              type="text"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              placeholder="e.g. Fashion"
-              className="h-12 p-4 rounded-xl outline outline-red-300 text-sm"
-            />
+      <nav className="bg-white shadow-lg">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center py-4">
+            <div className="text-lg font-semibold text-gray-800">Brand</div>
+            <div>
+              <button
+                onClick={handleNavigateHome}
+                className="text-gray-800 mx-2"
+              >
+                Home
+              </button>
+              <button
+                onClick={() => navigate("/add-new")}
+                className="text-gray-800 mx-2"
+              >
+                Product
+              </button>
+            </div>
           </div>
+        </div>
+      </nav>
+      <div className="container mx-auto px-4 py-8 text-black">
+        <div className="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-md">
+          <h2 className="text-2xl font-semibold mb-6">Tambah Kategori Baru</h2>
+          <form onSubmit={handleSubmit} className="text-gray-500">
+            {/* Input untuk Nama Kategori */}
+            <div className="mb-4">
+              <label
+                htmlFor="category-name"
+                className="block text-gray-700 mb-2"
+              >
+                Nama Kategori
+              </label>
+              <input
+                type="text"
+                id="category-name"
+                name="category-name"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="cth: Pakaian, Elektronik"
+                required
+              />
+            </div>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold text-zinc-800">
-              Sub-categories
-            </label>
-            {subCategory.map((sub, index) => (
-              <div key={index} className="flex gap-2 items-center">
-                <input
-                  type="text"
-                  value={sub}
-                  onChange={(e) =>
-                    handleSubCategoryChange(index, e.target.value)
-                  }
-                  placeholder={`Sub-category ${index + 1}`}
-                  className="flex-1 h-10 px-4 rounded-lg outline outline-red-300 text-sm"
-                />
-                <button
-                  type="button"
-                  onClick={() => deleteSubCategory(index)}
-                  className={`text-sm ${
-                    subCategory.length === 1
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-red-500 hover:underline"
-                  }`}
-                  disabled={subCategory.length === 1}
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
+            {/* Input untuk Gender */}
+            <div className="mb-4">
+              <label htmlFor="gender" className="block text-gray-700 mb-2">
+                Gender
+              </label>
+              <input
+                type="text"
+                id="gender"
+                name="gender"
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="cth: Pria, Wanita, Unisex"
+              />
+            </div>
+
+            {/* Input untuk Style */}
+            <div className="mb-4">
+              <label htmlFor="style" className="block text-gray-700 mb-2">
+                Style
+              </label>
+              <input
+                type="text"
+                id="style"
+                name="style"
+                value={style}
+                onChange={(e) => setStyle(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="cth: Casual, Formal, Sporty"
+              />
+            </div>
+
+            {/* Input untuk Color */}
+            <div className="mb-4">
+              <label htmlFor="color" className="block text-gray-700 mb-2">
+                Warna
+              </label>
+              <input
+                type="text"
+                id="color"
+                name="color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="cth: Merah, Hitam, Putih"
+              />
+            </div>
+
+            {/* Input untuk Size */}
+            <div className="mb-4">
+              <label htmlFor="size" className="block text-gray-700 mb-2">
+                Ukuran
+              </label>
+              <input
+                type="text"
+                id="size"
+                name="size"
+                value={size}
+                onChange={(e) => setSize(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="cth: S, M, L, XL"
+              />
+            </div>
+
             <button
-              type="button"
-              onClick={addMoreSubCategory}
-              className="text-sm text-red-600 hover:underline w-fit"
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
-              + Add More
+              Tambah Kategori
             </button>
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={`mt-4 w-full text-white font-semibold py-3 rounded-xl transition duration-200 ${
-              isLoading
-                ? "bg-red-300 cursor-not-allowed"
-                : "bg-[#ff0000] hover:bg-red-700"
-            }`}
-          >
-            {isLoading ? "Adding Category..." : "Submit"}
-          </button>
-        </form>
-      </main>
+          </form>
+        </div>
+      </div>
     </>
   );
 }
+
+export default AddCategoryPage;

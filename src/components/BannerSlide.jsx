@@ -77,7 +77,7 @@ export default function BannerSlide() {
           </p>
         </div>
 
-        {/* Dot Slide */}
+        {/* Slide Bottoms */}
         <div className="flex justify-center md:justify-center gap-2 pt-6 py-4">
           {banners.map((_, index) => (
             <div
@@ -92,7 +92,7 @@ export default function BannerSlide() {
         </div>
       </div>
 
-      {/* Arrow */}
+      {/* Arrow Next Prev*/}
       <div className="absolute inset-0 flex items-center justify-between px-4 z-20">
         <button
           onClick={handlePrev}

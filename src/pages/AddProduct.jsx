@@ -1,25 +1,30 @@
+// src/components/AddProductPage.jsx
+
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct } from "../redux/features/productSlice";
 import { fetchCategories } from "../redux/features/categorySlice";
 import { useNavigate } from "react-router";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import Swal from "sweetalert2";
 import { Timestamp } from "firebase/firestore";
 import { MdArrowDropDown } from "react-icons/md";
 
 function AddProductPage() {
   const [namaProduct, setNamaProduct] = useState("");
-  const [price, setPrice] = useState("");
-  const [imgUrl, setImgUrl] = useState([""]);
+  const [price, setPrice] = useState(null);
+  const [imgUrl, setImgUrl] = useState("");
   const [category, setCategory] = useState("");
   const [gender, setGender] = useState("");
   const [style, setStyle] = useState("");
-  const [size, setSize] = useState([""]);
-  const [stock, setStock] = useState("");
+  const [size, setSize] = useState("");
+  const [stock, setStock] = useState(null);
   const [description, setDescription] = useState("");
-  const [color, setColor] = useState([""]);
-  const [rating, setRating] = useState("");
-  const [newArrival, setNewArrival] = useState(true); // Default true
+  const [color, setColor] = useState("");
+  const [createdAt, setCreatedAt] = useState(null);
+  const [rating, setRating] = useState(null);
+  const [newArrival, setNewArrival] = useState("");
   const [discountPrice, setDiscountPrice] = useState("");
 
   const dispatch = useDispatch();
@@ -30,60 +35,6 @@ function AddProductPage() {
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
-
-  // Fungsi untuk menangani perubahan pada input imgUrl
-  const handleImgUrlChange = (index, value) => {
-    const newImgUrls = [...imgUrl];
-    newImgUrls[index] = value;
-    setImgUrl(newImgUrls);
-  };
-
-  // Fungsi untuk menambah input imgUrl baru
-  const addMoreImgUrl = () => {
-    setImgUrl([...imgUrl, ""]);
-  };
-
-  // Fungsi untuk menghapus input imgUrl
-  const deleteImgUrl = (index) => {
-    const newImgUrls = imgUrl.filter((_, i) => i !== index);
-    setImgUrl(newImgUrls);
-  };
-
-  // Fungsi untuk menangani perubahan pada input color
-  const handleColorChange = (index, value) => {
-    const newColors = [...color];
-    newColors[index] = value;
-    setColor(newColors);
-  };
-
-  // Fungsi untuk menambah input color baru
-  const addMoreColor = () => {
-    setColor([...color, ""]);
-  };
-
-  // Fungsi untuk menghapus input color
-  const deleteColor = (index) => {
-    const newColors = color.filter((_, i) => i !== index);
-    setColor(newColors);
-  };
-
-  // Fungsi untuk menangani perubahan pada input size
-  const handleSizeChange = (index, value) => {
-    const newSizes = [...size];
-    newSizes[index] = value;
-    setSize(newSizes);
-  };
-
-  // Fungsi untuk menambah input size baru
-  const addMoreSize = () => {
-    setSize([...size, ""]);
-  };
-
-  // Fungsi untuk menghapus input size
-  const deleteSize = (index) => {
-    const newSizes = size.filter((_, i) => i !== index);
-    setSize(newSizes);
-  };
 
   const handleAddProduct = (e) => {
     e.preventDefault();
@@ -96,20 +47,19 @@ function AddProductPage() {
     const product = {
       name: namaProduct,
       price: Number(price),
-      imgUrl: imgUrl.filter((url) => url.trim() !== ""),
+      imgUrl,
       category,
       gender,
       style,
-      size: size.filter((s) => s.trim() !== ""),
+      size,
       stock: Number(stock),
       description,
-      color: color.filter((c) => c.trim() !== ""),
-      createdAt: Timestamp.now(),
+      color,
+      createdAt: createdAt ? Timestamp.fromDate(createdAt) : Timestamp.now(),
       rating: Number(rating),
-      newArrival: newArrival,
-      discountPrice: discountPrice ? Number(discountPrice) : null,
+      newArrival,
+      discountPrice: Number(discountPrice),
     };
-
     dispatch(addProduct(product));
     Swal.fire("Success", "Product added successfully", "success").then(() => {
       navigate(-1);
@@ -168,7 +118,6 @@ function AddProductPage() {
                 type="text"
                 id="product-name"
                 name="product-name"
-                value={namaProduct}
                 onChange={(e) => setNamaProduct(e.target.value)}
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -185,7 +134,6 @@ function AddProductPage() {
                 type="number"
                 id="product-price"
                 name="product-price"
-                value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -203,9 +151,9 @@ function AddProductPage() {
                   className="h-12 px-4 pr-10 w-full rounded-xl outline text-sm bg-white appearance-none"
                 >
                   <option value="">-- Select Category --</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.category}>
-                      {cat.category}
+                  {getUniqueOptions("category").map((cat, index) => (
+                    <option key={index} value={cat}>
+                      {cat}
                     </option>
                   ))}
                 </select>
@@ -215,41 +163,20 @@ function AddProductPage() {
               </div>
             </div>
 
-            {/* Input untuk imgUrl yang bisa ditambah/dihapus */}
-            <div className="flex flex-col gap-2 mb-4">
-              <label className="text-sm font-bold text-zinc-800">
-                Image URLs
-              </label>
-              {imgUrl.map((url, index) => (
-                <div key={index} className="flex gap-2 items-center">
-                  <input
-                    type="url"
-                    value={url}
-                    onChange={(e) => handleImgUrlChange(index, e.target.value)}
-                    placeholder={`Image URL ${index + 1}`}
-                    className="flex-1 h-10 px-4 rounded-lg outline outline-gray-500 text-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => deleteImgUrl(index)}
-                    className={`text-sm ${
-                      imgUrl.length === 1
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-gray-500 hover:underline"
-                    }`}
-                    disabled={imgUrl.length === 1}
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={addMoreImgUrl}
-                className="text-sm text-gray-600 hover:underline w-fit"
+            <div className="mb-4">
+              <label
+                htmlFor="product-image"
+                className="block text-gray-700 mb-2"
               >
-                + Add More URL
-              </button>
+                Image URL
+              </label>
+              <input
+                type="url"
+                id="product-image"
+                name="product-image"
+                onChange={(e) => setImgUrl(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
 
             {/* Select untuk Gender */}
@@ -296,39 +223,26 @@ function AddProductPage() {
               </div>
             </div>
 
-            {/* Input untuk Size yang bisa ditambah/dihapus */}
-            <div className="flex flex-col gap-2 mb-4">
-              <label className="text-sm font-bold text-zinc-800">Sizes</label>
-              {size.map((s, index) => (
-                <div key={index} className="flex gap-2 items-center">
-                  <input
-                    type="text"
-                    value={s}
-                    onChange={(e) => handleSizeChange(index, e.target.value)}
-                    placeholder={`Size ${index + 1}`}
-                    className="flex-1 h-10 px-4 rounded-lg outline outline-gray-500 text-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => deleteSize(index)}
-                    className={`text-sm ${
-                      size.length === 1
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-gray-500 hover:underline"
-                    }`}
-                    disabled={size.length === 1}
-                  >
-                    Remove
-                  </button>
+            {/* Select untuk Size */}
+            <div className="mb-4 flex-1 flex flex-col gap-1.5">
+              <label className="text-sm font-bold text-zinc-800">Size</label>
+              <div className="relative w-full">
+                <select
+                  value={size}
+                  onChange={(e) => setSize(e.target.value)}
+                  className="h-12 px-4 pr-10 w-full rounded-xl outline text-sm bg-white appearance-none"
+                >
+                  <option value="">-- Select Size --</option>
+                  {getUniqueOptions("size").map((sizeOption, index) => (
+                    <option key={index} value={sizeOption}>
+                      {sizeOption}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none text-gray-500">
+                  <MdArrowDropDown size={24} />
                 </div>
-              ))}
-              <button
-                type="button"
-                onClick={addMoreSize}
-                className="text-sm text-gray-600 hover:underline w-fit"
-              >
-                + Add More Size
-              </button>
+              </div>
             </div>
 
             <div className="mb-4">
@@ -342,7 +256,6 @@ function AddProductPage() {
                 type="number"
                 id="product-stock"
                 name="product-stock"
-                value={stock}
                 onChange={(e) => setStock(e.target.value)}
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -358,45 +271,48 @@ function AddProductPage() {
               <textarea
                 id="product-description"
                 name="product-description"
-                value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
-            {/* Input untuk Color yang bisa ditambah/dihapus */}
-            <div className="flex flex-col gap-2 mb-4">
-              <label className="text-sm font-bold text-zinc-800">Colors</label>
-              {color.map((c, index) => (
-                <div key={index} className="flex gap-2 items-center">
-                  <input
-                    type="text"
-                    value={c}
-                    onChange={(e) => handleColorChange(index, e.target.value)}
-                    placeholder={`Color ${index + 1}`}
-                    className="flex-1 h-10 px-4 rounded-lg outline outline-gray-500 text-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => deleteColor(index)}
-                    className={`text-sm ${
-                      color.length === 1
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-gray-500 hover:underline"
-                    }`}
-                    disabled={color.length === 1}
-                  >
-                    Remove
-                  </button>
+            {/* Select untuk Color */}
+            <div className="mb-4 flex-1 flex flex-col gap-1.5">
+              <label className="text-sm font-bold text-zinc-800">Color</label>
+              <div className="relative w-full">
+                <select
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  className="h-12 px-4 pr-10 w-full rounded-xl outline text-sm bg-white appearance-none"
+                >
+                  <option value="">-- Select Color --</option>
+                  {getUniqueOptions("color").map((colorOption, index) => (
+                    <option key={index} value={colorOption}>
+                      {colorOption}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none text-gray-500">
+                  <MdArrowDropDown size={24} />
                 </div>
-              ))}
-              <button
-                type="button"
-                onClick={addMoreColor}
-                className="text-sm text-gray-600 hover:underline w-fit"
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label
+                htmlFor="product-createdAt"
+                className="block text-gray-700 mb-2"
               >
-                + Add More Color
-              </button>
+                Created At
+              </label>
+              <DatePicker
+                selected={createdAt}
+                onChange={(date) => setCreatedAt(date)}
+                dateFormat="yyyy-MM-dd"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholderText="Select a date"
+                id="product-createdAt"
+              />
             </div>
 
             <div className="mb-4">
@@ -411,7 +327,6 @@ function AddProductPage() {
                 step="0.1"
                 id="product-rating"
                 name="product-rating"
-                value={rating}
                 onChange={(e) => setRating(e.target.value)}
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -428,27 +343,9 @@ function AddProductPage() {
                 type="number"
                 id="product-discount"
                 name="product-discount"
-                value={discountPrice}
                 onChange={(e) => setDiscountPrice(e.target.value)}
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </div>
-
-            <div className="mb-4 flex items-center">
-              <input
-                type="checkbox"
-                id="new-arrival"
-                name="new-arrival"
-                checked={newArrival}
-                onChange={(e) => setNewArrival(e.target.checked)}
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label
-                htmlFor="new-arrival"
-                className="ml-2 block text-sm text-gray-900"
-              >
-                New Arrival
-              </label>
             </div>
 
             <button

@@ -1,7 +1,7 @@
 import { useEffect, useState, createContext } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { getDoc, doc } from "firebase/firestore";
-import { auth, db } from "../configs/firebase";
+import { auth, db } from "../firebase/firebase";
 
 export const AuthContext = createContext({
   user: null,
@@ -42,10 +42,8 @@ export default function AuthContextProvider({ children }) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="flex flex-col items-center gap-3">
-          <span className="loading loading-spinner text-[#000000] w-12 h-12"></span>
-          <p className="text-[#000000] text-lg font-normal">
-            Authenticating...
-          </p>
+          <span className="loading loading-spinner text-black w-12 h-12"></span>
+          <p className="text-black text-lg font-normal">Authenticating...</p>
         </div>
       </div>
     );

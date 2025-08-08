@@ -2,7 +2,7 @@ import React from "react";
 
 export default function CallToAction() {
   return (
-    <div className="flex items-center justify-center pt-15">
+    <div className="flex items-center justify-center pt-8">
       <div
         className="w-full max-w-[1240px] h-[450px] relative rounded-2xl overflow-hidden mx-4 sm:mx-6 md:mx-12 bg-cover bg-center"
         style={{
